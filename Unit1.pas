@@ -155,7 +155,7 @@ var
   str_end: string;         // маркер конца строки
   currentVersion: string;  // текущая версия приложения
   modUse: integer;         // ctrl,alt
-
+  tmpMass : Array [0..50] of string;
 implementation
 
 {$R *.dfm}
@@ -1136,10 +1136,115 @@ begin
   buffer.Show;
 end;
 procedure Tmain.N8Click(Sender: TObject);
-  var value : string;
+var
+  newNumberPage, oldNumberPage: string;
 begin
-  value := InputBox('Смена страниц', 'поменять эту страницу с:', '');
-  savePage(main.titleItems.Text,strtoint(value));
+  newNumberPage := InputBox('Смена страниц', 'поменять эту страницу с:', '');
+  if (newNumberPage.Length=0)   then main.status.Panels.Items[1].Text:= 'так нельзя! :(' else begin
+
+    oldNumberPage:= main.pageNumber.Caption;
+
+    main.status.Panels[1].Text:=  newNumberPage;
+
+    tmpMass[1]:= main.item1.Text;
+    tmpMass[2]:= main.item2.Text;
+    tmpMass[3]:= main.item3.Text;
+    tmpMass[4]:= main.item4.Text;
+    tmpMass[5]:= main.item5.Text;
+    tmpMass[6]:= main.item6.Text;
+    tmpMass[7]:= main.item7.Text;
+    tmpMass[8]:= main.item8.Text;
+    tmpMass[9]:= main.item9.Text;
+    tmpMass[0]:= main.item0.Text;
+    tmpMass[11]:= main.note1.Text;
+    tmpMass[12]:= main.note2.Text;
+    tmpMass[13]:= main.note3.Text;
+    tmpMass[14]:= main.note4.Text;
+    tmpMass[15]:= main.note5.Text;
+    tmpMass[16]:= main.note6.Text;
+    tmpMass[17]:= main.note7.Text;
+    tmpMass[18]:= main.note8.Text;
+    tmpMass[19]:= main.note9.Text;
+    tmpMass[10]:= main.note0.Text;
+    tmpMass[20]:= main.titleItems.Text;
+
+    pageInit(strtoint(newNumberPage));
+
+    tmpMass[31]:= main.item1.Text;
+    tmpMass[32]:= main.item2.Text;
+    tmpMass[33]:= main.item3.Text;
+    tmpMass[34]:= main.item4.Text;
+    tmpMass[35]:= main.item5.Text;
+    tmpMass[36]:= main.item6.Text;
+    tmpMass[37]:= main.item7.Text;
+    tmpMass[38]:= main.item8.Text;
+    tmpMass[39]:= main.item9.Text;
+    tmpMass[30]:= main.item0.Text;
+    tmpMass[41]:= main.note1.Text;
+    tmpMass[42]:= main.note2.Text;
+    tmpMass[43]:= main.note3.Text;
+    tmpMass[44]:= main.note4.Text;
+    tmpMass[45]:= main.note5.Text;
+    tmpMass[46]:= main.note6.Text;
+    tmpMass[47]:= main.note7.Text;
+    tmpMass[48]:= main.note8.Text;
+    tmpMass[49]:= main.note9.Text;
+    tmpMass[40]:= main.note0.Text;
+    tmpMass[50]:= main.titleItems.Text;
+
+    main.item1.Text := tmpMass[1];
+    main.item2.Text := tmpMass[2];
+    main.item3.Text := tmpMass[3];
+    main.item4.Text := tmpMass[4];
+    main.item5.Text := tmpMass[5];
+    main.item6.Text := tmpMass[6];
+    main.item7.Text := tmpMass[7];
+    main.item8.Text := tmpMass[8];
+    main.item9.Text := tmpMass[9];
+    main.item0.Text := tmpMass[0];
+    main.note1.Text := tmpMass[11];
+    main.note2.Text := tmpMass[12];
+    main.note3.Text := tmpMass[13];
+    main.note4.Text := tmpMass[14];
+    main.note5.Text := tmpMass[15];
+    main.note6.Text := tmpMass[16];
+    main.note7.Text := tmpMass[17];
+    main.note8.Text := tmpMass[18];
+    main.note9.Text := tmpMass[19];
+    main.note0.Text := tmpMass[10];
+    main.titleItems.Text := tmpMass[20];
+
+    savePage(main.titleItems.Text,-1);
+    pageInit(strtoint(oldNumberPage));
+
+    main.item1.Text := tmpMass[31];
+    main.item2.Text := tmpMass[32];
+    main.item3.Text := tmpMass[33];
+    main.item4.Text := tmpMass[34];
+    main.item5.Text := tmpMass[35];
+    main.item6.Text := tmpMass[36];
+    main.item7.Text := tmpMass[37];
+    main.item8.Text := tmpMass[38];
+    main.item9.Text := tmpMass[39];
+    main.item0.Text := tmpMass[30];
+    main.note1.Text := tmpMass[41];
+    main.note2.Text := tmpMass[42];
+    main.note3.Text := tmpMass[43];
+    main.note4.Text := tmpMass[44];
+    main.note5.Text := tmpMass[45];
+    main.note6.Text := tmpMass[46];
+    main.note7.Text := tmpMass[47];
+    main.note8.Text := tmpMass[48];
+    main.note9.Text := tmpMass[49];
+    main.note0.Text := tmpMass[40];
+    main.titleItems.Text := tmpMass[50];
+    savePage(main.titleItems.Text,-1);
+
+    pageInit(strtoint(newNumberPage));
+  end;
+
+
+//  savePage(main.titleItems.Text,strtoint(value));
 end;
 
 

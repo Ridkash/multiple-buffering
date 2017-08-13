@@ -6019,8 +6019,6 @@ object main: Tmain
       item
         Width = 50
       end>
-    ExplicitTop = 512
-    ExplicitWidth = 296
   end
   object changeTitle: TBitBtn
     Left = 275
@@ -6434,6 +6432,7 @@ object main: Tmain
       end
       object N8: TMenuItem
         Caption = 'move this page'
+        ShortCut = 117
         OnClick = N8Click
       end
     end

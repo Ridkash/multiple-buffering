@@ -1,3 +1,6 @@
+Win32/Debug/*.ini
 __history/*
 __recovery/*
 *.stat
+*.local
+*.identcache
