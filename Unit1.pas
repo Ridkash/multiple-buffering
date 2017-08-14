@@ -84,6 +84,7 @@ type
     goUp9: TBitBtn;
     goUp0: TBitBtn;
     N8: TMenuItem;
+    N9: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure N3Click(Sender: TObject);
 
@@ -133,6 +134,7 @@ type
     procedure goUp8Click(Sender: TObject);
     procedure goUp9Click(Sender: TObject);
     procedure goUp0Click(Sender: TObject);
+    procedure N9Click(Sender: TObject);
 
 
   private
@@ -732,7 +734,7 @@ begin
   //Инициализация переменных
   numberPageMax := 99;    // Число страниц (по умолчанию)
   numberPageCurrent := 0; // Текущая страница
-  currentVersion:='0.1.0.1';
+  currentVersion:='0.1.0.3';
   str_end := '#NL#'; // Задание маркера конца строки
   status.Panels[0].text:='';
   status.Panels[1].text:='инициализация данных...';
@@ -1139,8 +1141,9 @@ procedure Tmain.N8Click(Sender: TObject);
 var
   newNumberPage, oldNumberPage: string;
 begin
-  newNumberPage := InputBox('Смена страниц', 'поменять эту страницу с:', '');
-  if (newNumberPage.Length=0)   then main.status.Panels.Items[1].Text:= 'так нельзя! :(' else begin
+  newNumberPage := InputBox('Смена страниц', 'поменять эту страницу на:', '');
+
+  if  ((newNumberPage.Length=0) or ((strtoint(newNumberPage)<0) and (strtoint(newNumberPage) > strtoint(main.pageNumber.Caption)))) then main.status.Panels.Items[1].Text:= 'так нельзя! :(' else begin
 
     oldNumberPage:= main.pageNumber.Caption;
 
@@ -1247,5 +1250,19 @@ begin
 //  savePage(main.titleItems.Text,strtoint(value));
 end;
 
+
+procedure Tmain.N9Click(Sender: TObject);
+var a: word;
+begin
+a := strtoint(InputBox('Перейти на страницу:', '№', '0'));
+if (a >= 0) and (a <= numberPageMax) then begin
+  pageinit(a);
+  main.status.Panels.Items[1].Text:='перешел';
+  end else main.status.Panels.Items[1].Text:= 'страница не найдена';
+
+
+
+
+end;
 
 end.

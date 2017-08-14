@@ -6431,9 +6431,14 @@ object main: Tmain
         OnClick = N4Click
       end
       object N8: TMenuItem
-        Caption = 'move this page'
+        Caption = #1057#1084#1077#1085#1072' '#1089#1090#1088#1072#1085#1080#1094
         ShortCut = 117
         OnClick = N8Click
+      end
+      object N9: TMenuItem
+        Caption = #1055#1077#1088#1077#1093#1086#1076' '#1085#1072' '#1089#1090#1088'.'
+        ShortCut = 115
+        OnClick = N9Click
       end
     end
     object buffer1: TMenuItem

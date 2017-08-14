@@ -8,9 +8,12 @@ uses
 
 type
   Tsettings = class(TForm)
-    RadioGroup1: TRadioGroup;
     Button1: TButton;
     Button2: TButton;
+    Edit1: TEdit;
+    Label1: TLabel;
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -23,5 +26,17 @@ var
 implementation
 
 {$R *.dfm}
+
+uses Unit1;
+
+procedure Tsettings.Button1Click(Sender: TObject);
+begin
+settings.Hide;
+end;
+
+procedure Tsettings.Button2Click(Sender: TObject);
+begin
+//main.
+end;
 
 end.
