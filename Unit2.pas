@@ -8,12 +8,14 @@ uses
 
 type
   Tsettings = class(TForm)
-    Button1: TButton;
-    Button2: TButton;
-    Edit1: TEdit;
-    Label1: TLabel;
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+    ButtonCancel: TButton;
+    ButtonSave: TButton;
+    EditNumberMaxPage: TEdit;
+    LabelNumberMaxPage: TLabel;
+    LabelBuferG: TLabel;
+    EditBuferG: TEdit;
+    procedure ButtonCancelClick(Sender: TObject);
+    procedure ButtonSaveClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -29,14 +31,18 @@ implementation
 
 uses Unit1;
 
-procedure Tsettings.Button1Click(Sender: TObject);
+procedure Tsettings.ButtonCancelClick(Sender: TObject);
 begin
 settings.Hide;
 end;
 
-procedure Tsettings.Button2Click(Sender: TObject);
+procedure Tsettings.ButtonSaveClick(Sender: TObject);
 begin
-//main.
+    Unit1.ini.WriteString('settings', 'IdPagelAST', main.pageNumber.Caption);
+    Unit1.ini.WriteString('settings', 'numberPageMax', settings.EditNumberMaxPage.Text);
+    Unit1.ini.WriteString('settings', 'buferG', settings.EditBuferG.Text);
+//    main.status.Panels.Items[1].Text:='настройки сохранены';
+    settings.Hide;
 end;
 
 end.

@@ -157,6 +157,7 @@ var
   str_end: string;         // маркер конца строки
   currentVersion: string;  // текущая версия приложения
   modUse: integer;         // ctrl,alt
+  bufferG: string;         // окно произвольного буфера
   tmpMass : Array [0..50] of string;
 implementation
 
@@ -511,14 +512,16 @@ begin
 
   if Msg.HotKey = id_C_G then begin
     currentTime:= FormatDateTime('hh:mm, dd.MM.YYYY',Now);
-    bodyText := 'информация об ОО: '+#13#10#9
-              +'звонил: '+#13#10#9
-              +'когда: '+currentTime+#13#10#9
-              +'номер инцидента: '+#13#10#9
-              +'по проблеме: '+#13#10#9
-              +'что сделано: '+#13#10
-              +'-------------------'+#13#10
-              ;
+    bodyText:= settings.EditBuferG.Text;
+//    bodyText := 'информация об ОО: '+#13#10#9
+//              +'звонил: '+#13#10#9
+//              +'когда: '+currentTime+#13#10#9
+//              +'номер инцидента: '+#13#10#9
+//              +'по проблеме: '+#13#10#9
+//              +'что сделано: '+#13#10
+//              +'-------------------'+#13#10
+//              ;
+
     ClipBoard.SetTextBuf(PChar(bodyText));
     buffer.tablo.Caption := currentTime + bodyText;
     buffer.Caption := 'Отчет по звонку:';
@@ -732,9 +735,9 @@ var
 
 begin
   //Инициализация переменных
-  numberPageMax := 99;    // Число страниц (по умолчанию)
+//  numberPageMax := 99;    // Число страниц (по умолчанию)
   numberPageCurrent := 0; // Текущая страница
-  currentVersion:='0.1.0.3';
+  currentVersion:='0.1.0.4';
   str_end := '#NL#'; // Задание маркера конца строки
   status.Panels[0].text:='';
   status.Panels[1].text:='инициализация данных...';
@@ -751,17 +754,23 @@ begin
       // Если файл существует пытаемся прочитать его
       ini := TIniFile.Create(fileSettingsName);
       numberPageCurrent:=ini.ReadInteger('settings', 'IdPagelAST', 9);
+      numberPageMax:=ini.ReadInteger('settings', 'numberPageMax', 99);
+      bufferG:=ini.Readstring('settings', 'buferG', 'ok');
   end else begin
     // Если не существует пытаемся создать файл
     try
        ini.WriteInteger('settings', 'IdPagelAST', 0);
 
-       for i := 0 to numberPageMax do begin
+       ini.WriteString('settings','numberPageMax', '99');
+       ini.WriteString('settings','buferG', '0');
+
+
+       for i := 0 to 99 do begin
           titlesMass[i] := 'title'+intToStr(i);
           ini.WriteString('TITLES-MASS', 'title['+inttostr(i)+']', inttostr(i)+' page');
        end;
 
-       for i := 0 to numberPageMax*10 do begin
+       for i := 0 to 990 do begin
           itemsMass[i] := 'Item'+intToStr(i);
           ini.WriteString('ITEMS-MASS', 'items['+inttostr(i)+']', 'буфер: '+inttostr(i));
 
@@ -769,18 +778,6 @@ begin
           ini.WriteString('ITEMS-NOTICE-MASS', 'notice['+inttostr(i)+']', ' ');
        end;
 
-    {
-      // Write a string value to the INI file.
-      ini.WriteString('Section_Name', 'Key_Name', 'String Value');
-      // Write a integer value to the INI file.
-      ini.WriteInteger('Section_Name', 'Key_Name2', 2002);
-      // Write a boolean value to the INI file.
-      ini.WriteBool('Section_Name', 'Key_Name3', True);
-
-
-     res := ini.ReadString('ITEMS-NOTICE-MASS', 'notice['+inttostr(i)+']', '*none*');
-     res := ini.ReadString('Section_Name', 'Key_Name', 'default value');
-    }
     finally
 
     end;
@@ -1120,6 +1117,9 @@ end;
 procedure Tmain.N4Click(Sender: TObject);
 begin
 settings.Show;
+settings.EditNumberMaxPage.Text :=ini.Readstring('settings', 'numberPageMax', '99');
+settings.EditBuferG.Text:=ini.Readstring('settings', 'buferG', '9');
+
 end;
 procedure Tmain.N5Click(Sender: TObject);
 begin
