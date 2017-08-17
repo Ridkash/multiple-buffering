@@ -512,7 +512,7 @@ begin
 
   if Msg.HotKey = id_C_G then begin
     currentTime:= FormatDateTime('hh:mm, dd.MM.YYYY',Now);
-    bodyText:= settings.EditBuferG.Text;
+    bodyText:= unit1.bufferG;
 //    bodyText := 'информация об ОО: '+#13#10#9
 //              +'звонил: '+#13#10#9
 //              +'когда: '+currentTime+#13#10#9
@@ -737,7 +737,7 @@ begin
   //Инициализация переменных
 //  numberPageMax := 99;    // Число страниц (по умолчанию)
   numberPageCurrent := 0; // Текущая страница
-  currentVersion:='0.1.0.4';
+  currentVersion:='0.1.0.5';
   str_end := '#NL#'; // Задание маркера конца строки
   status.Panels[0].text:='';
   status.Panels[1].text:='инициализация данных...';
@@ -756,6 +756,7 @@ begin
       numberPageCurrent:=ini.ReadInteger('settings', 'IdPagelAST', 9);
       numberPageMax:=ini.ReadInteger('settings', 'numberPageMax', 99);
       bufferG:=ini.Readstring('settings', 'buferG', 'ok');
+
   end else begin
     // Если не существует пытаемся создать файл
     try
