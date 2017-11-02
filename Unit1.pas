@@ -7,7 +7,7 @@ uses
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, Vcl.ComCtrls,Clipbrd,
-  Vcl.Buttons;
+  Vcl.Buttons, Data.FMTBcd, Data.DbxSqlite, Data.DB, Data.SqlExpr;
 
 type
   Tmain = class(TForm)
@@ -85,6 +85,9 @@ type
     goUp0: TBitBtn;
     N8: TMenuItem;
     N9: TMenuItem;
+    query: TSQLQuery;
+    BufferConnection: TSQLConnection;
+    empbutton1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure N3Click(Sender: TObject);
 
@@ -135,6 +138,7 @@ type
     procedure goUp9Click(Sender: TObject);
     procedure goUp0Click(Sender: TObject);
     procedure N9Click(Sender: TObject);
+    procedure empbutton1Click(Sender: TObject);
 
 
   private
@@ -158,6 +162,7 @@ var
   currentVersion: string;  // текущая версия приложения
   modUse: integer;         // ctrl,alt
   bufferG: string;         // окно произвольного буфера
+  queryStr: string;
   tmpMass : Array [0..50] of string;
 implementation
 
@@ -165,6 +170,38 @@ implementation
 
 
 //Свои процедуры и функции
+// SQL inject
+//  Query->ExecSQL();
+//  Query->Open();
+
+
+procedure readItem();
+var str: string;
+
+begin
+  showmessage(ExtractFilePath(paramstr(0))+'имя базы данных');
+end;
+
+procedure cmdSql( cmd :word; sql:string);
+var str: string;
+begin
+main.query.SQL.Text:=sql;
+  case cmd of
+//    0 - для SELECT, 1 -  для INSERT, CREATE, update...
+    0 : main.query.Open;
+    1 : main.query.ExecSQL();
+    else ShowMessage(' неизвестная команда');
+  end;
+end;
+
+
+
+
+
+
+
+
+////////////
 function toAddLine(inStr:string):string;
 var
   i:word;
@@ -624,6 +661,12 @@ begin
   buffer.StatusBar1.Panels[0].Text := 'page: '+pageNumber.Caption;
 end;
 
+procedure Tmain.empbutton1Click(Sender: TObject);
+begin
+//readItem();
+//insertItem();
+end;
+
 procedure Tmain.paste0Click(Sender: TObject);
 begin
   item0.lines.text:=ClipBoard.AsText;
@@ -728,14 +771,19 @@ const
   VK_following = $45;
 
 var
+//sqlite
+
+
+//////////
   x,y,i: word;
   a,b: string;
   fileSettingsName:string;
+  dbName : string;
   itemsMass,noticesMass,titlesMass: Array [0..10000] of string;
 
 begin
   //Инициализация переменных
-//  numberPageMax := 99;    // Число страниц (по умолчанию)
+  numberPageMax := 99;    // Число страниц (по умолчанию)
   numberPageCurrent := 0; // Текущая страница
   currentVersion:='0.1.0.5';
   str_end := '#NL#'; // Задание маркера конца строки
@@ -744,10 +792,41 @@ begin
 // MOD_ALT = 1;
 // MOD_CONTROL = 2;
   modUse := 2;
-
+  fileSettingsName := GetCurrentDir + '\settings.ini';
+  dbName:=GetCurrentDir + '\base.db';
+  main.BufferConnection.Params.Add('Database='+dbName);
   main.Caption := main.Caption + ' ' + currentVersion;
 
-  fileSettingsName := GetCurrentDir + '\settings.ini';
+
+//SQL - запросы
+  // create table buffers (item text,notice text);
+  //*********
+  // INSERT INTO bufers (item, notice)
+  //              VALUES ("ok", "okk");
+  //***********
+  // UPDATE Customers
+  //  SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
+  //  WHERE CustomerID = 1;
+  //************
+  // DELETE FROM Customers
+  //  WHERE CustomerName='Alfreds Futterkiste';
+
+  // Проверка на существование base.db в каталоге где запускается приложение если не существует инициализируем таблицу.
+  if not FileExists(dbName) then begin
+    main.BufferConnection.Connected:=true;
+    cmdSql(1,'create table buffers (title_id int,item text,notice text);');
+    cmdSql(1,'create table titles (title text);');
+    cmdSql(1,'create table shortcuts (shortcurt text,cmd text);');
+    cmdSql(1,'create table settings (numberPageLast int,numberPageMax int);');
+
+    for i := 1 to numberPageMax do cmdSql(1,'INSERT INTO titles (title) VALUES ("title '+ inttostr(i) +'");');
+    for i := 1 to numberPageMax*10 do cmdSql(1,'INSERT INTO buffers (title_id,item,notice) VALUES (0,"item '+inttostr(i)+'", "notice '+inttostr(i)+'");');
+    cmdSql(1,'INSERT INTO settings (numberPageLast, numberPageMax) VALUES (0, 99);');
+  end else begin
+
+  end;
+
+
   ini := TIniFile.Create(fileSettingsName);
 
   if FileExists(fileSettingsName)then begin

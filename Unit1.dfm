@@ -1,9 +1,9 @@
 object main: Tmain
   Left = 0
   Top = 0
-  Caption = 'CopyPaster ver.'
-  ClientHeight = 532
-  ClientWidth = 302
+  Caption = 'Multi buffer ver.'
+  ClientHeight = 508
+  ClientWidth = 696
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clBlue
@@ -5985,8 +5985,8 @@ object main: Tmain
   end
   object status: TStatusBar
     Left = 0
-    Top = 513
-    Width = 302
+    Top = 489
+    Width = 696
     Height = 19
     Panels = <
       item
@@ -6440,6 +6440,10 @@ object main: Tmain
         ShortCut = 115
         OnClick = N9Click
       end
+      object empbutton1: TMenuItem
+        Caption = 'Temp button'
+        OnClick = empbutton1Click
+      end
     end
     object buffer1: TMenuItem
       Caption = #1073#1091#1092#1077#1088
@@ -6463,5 +6467,31 @@ object main: Tmain
     end
     object TMenuItem
     end
+  end
+  object query: TSQLQuery
+    MaxBlobSize = -1
+    Params = <>
+    SQLConnection = BufferConnection
+    Left = 568
+    Top = 200
+  end
+  object BufferConnection: TSQLConnection
+    ConnectionName = 'buffer'
+    DriverName = 'Sqlite'
+    LoginPrompt = False
+    Params.Strings = (
+      'DriverName=Sqlite'
+      'DriverUnit=Data.DbxSqlite'
+      
+        'DriverPackageLoader=TDBXSqliteDriverLoader,DBXSqliteDriver250.bp' +
+        'l'
+      
+        'MetaDataPackageLoader=TDBXSqliteMetaDataCommandFactory,DbxSqlite' +
+        'Driver250.bpl'
+      'FailIfMissing=false'
+      'Database='
+      'HostName=')
+    Left = 575
+    Top = 88
   end
 end
