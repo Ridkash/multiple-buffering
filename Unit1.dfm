@@ -2,8 +2,8 @@ object main: Tmain
   Left = 0
   Top = 0
   Caption = 'Multi buffer ver.'
-  ClientHeight = 508
-  ClientWidth = 696
+  ClientHeight = 529
+  ClientWidth = 435
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clBlue
@@ -5985,8 +5985,8 @@ object main: Tmain
   end
   object status: TStatusBar
     Left = 0
-    Top = 489
-    Width = 696
+    Top = 510
+    Width = 435
     Height = 19
     Panels = <
       item
@@ -6417,8 +6417,8 @@ object main: Tmain
     OnClick = goUp0Click
   end
   object MainMenu1: TMainMenu
-    Left = 408
-    Top = 16
+    Left = 320
+    Top = 48
     object N1: TMenuItem
       Caption = #1052#1077#1085#1102
       object N2: TMenuItem
@@ -6472,8 +6472,8 @@ object main: Tmain
     MaxBlobSize = -1
     Params = <>
     SQLConnection = BufferConnection
-    Left = 568
-    Top = 200
+    Left = 320
+    Top = 128
   end
   object BufferConnection: TSQLConnection
     ConnectionName = 'buffer'
@@ -6491,7 +6491,7 @@ object main: Tmain
       'FailIfMissing=false'
       'Database='
       'HostName=')
-    Left = 575
+    Left = 319
     Top = 88
   end
 end

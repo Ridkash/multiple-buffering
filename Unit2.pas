@@ -38,9 +38,9 @@ end;
 
 procedure Tsettings.ButtonSaveClick(Sender: TObject);
 begin
-    Unit1.ini.WriteString('settings', 'IdPagelAST', main.pageNumber.Caption);
-    Unit1.ini.WriteString('settings', 'numberPageMax', settings.EditNumberMaxPage.Text);
-    Unit1.ini.WriteString('settings', 'buferG', settings.EditBuferG.Text);
+//    Unit1.ini.WriteString('settings', 'IdPagelAST', main.pageNumber.Caption);
+//    Unit1.ini.WriteString('settings', 'numberPageMax', settings.EditNumberMaxPage.Text);
+//    Unit1.ini.WriteString('settings', 'buferG', settings.EditBuferG.Text);
 //    main.status.Panels.Items[1].Text:='настройки сохранены';
     settings.Hide;
 end;

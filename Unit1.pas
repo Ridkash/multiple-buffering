@@ -124,7 +124,6 @@ type
     procedure N5Click(Sender: TObject);
     procedure N7Click(Sender: TObject);
     procedure N8Click(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
     procedure changeTitleClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure goUp1Click(Sender: TObject);
@@ -139,6 +138,7 @@ type
     procedure goUp0Click(Sender: TObject);
     procedure N9Click(Sender: TObject);
     procedure empbutton1Click(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
 
 
   private
@@ -159,6 +159,8 @@ var
   numberPageCurrent:word;  // Текущая страница
   ini: TIniFile;           //ини файл настроек
   str_end: string;         // маркер конца строки
+  sql_znak_in,
+  sql_znak_out: string;    // что буду заменять в sql запросах
   currentVersion: string;  // текущая версия приложения
   modUse: integer;         // ctrl,alt
   bufferG: string;         // окно произвольного буфера
@@ -182,13 +184,43 @@ begin
   showmessage(ExtractFilePath(paramstr(0))+'имя базы данных');
 end;
 
-procedure cmdSql( cmd :word; sql:string);
+procedure cmdSql( cmd :word; sql:string; var res:string);
 var str: string;
+    names: TStringList;
+    i: Integer;
+    currentField: TField;
+    currentLine: string;
 begin
+res:='';
 main.query.SQL.Text:=sql;
   case cmd of
 //    0 - для SELECT, 1 -  для INSERT, CREATE, update...
-    0 : main.query.Open;
+    0 : begin 
+          main.query.Open;
+        if not main.query.IsEmpty then
+        begin
+          main.query.First;
+          names := TStringList.Create;
+          try
+            main.query.GetFieldNames(names);
+            while not main.query.Eof do
+            begin
+              currentLine := '';
+              for i := 0 to names.Count - 1 do
+              begin
+                currentField := main.query.FieldByName(names[i]);
+                currentLine := currentLine + ' ' + currentField.AsString;
+              end;
+              res:= res + currentLine;
+              main.query.Next;
+            end;
+          finally
+            names.Free;
+          end;
+        end;
+
+          
+    end;
     1 : main.query.ExecSQL();
     else ShowMessage(' неизвестная команда');
   end;
@@ -269,97 +301,79 @@ begin
   result:=rslt + str
 end;
 /////
-procedure savePage(textBuffer:string;toMove:integer);
+procedure savePageSQL();
 var
   i:word;
+  bufferCount: word;
+  tmp,sql:string;
+  
 begin
-  if (toMove = -1) then begin
-    ini.WriteString('settings', 'IdPagelAST', main.pageNumber.Caption);
+//  replaceSub();
+  
+  cmdSql(1,'UPDATE titles SET title = "'+trim(main.titleItems.Text)+'" WHERE rowid = '+main.pageNumber.Caption+';',tmp);
 
-    ini.WriteString('TITLES-MASS', 'title['+main.pageNumber.Caption+']', textBuffer);
+  bufferCount:=strtoint(main.pageNumber.Caption) * 10;
+  cmdSql(1,'UPDATE settings SET numberPageLast = '+trim(main.pageNumber.Caption)+' WHERE rowid = 1;',tmp);
+  
+  sql:= 'UPDATE buffers SET item="'+trim(main.item0.Text)+'" WHERE rowid = '+inttostr(bufferCount)+';'; cmdSql(1,sql,tmp);
+  sql:='UPDATE buffers SET item = "'+trim(main.item1.Text)+'" WHERE rowid = '+inttostr(bufferCount+1)+';'; cmdSql(1,sql,tmp);
+  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item2.Text)+'" WHERE rowid = '+inttostr(bufferCount+2)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item3.Text)+'" WHERE rowid = '+inttostr(bufferCount+3)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item4.Text)+'" WHERE rowid = '+inttostr(bufferCount+4)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item5.Text)+'" WHERE rowid = '+inttostr(bufferCount+5)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item6.Text)+'" WHERE rowid = '+inttostr(bufferCount+6)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item7.Text)+'" WHERE rowid = '+inttostr(bufferCount+7)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item8.Text)+'" WHERE rowid = '+inttostr(bufferCount+8)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item9.Text)+'" WHERE rowid = '+inttostr(bufferCount+9)+';',tmp);
 
+  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note0.Text)+'" WHERE rowid = '+inttostr(bufferCount)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note1.Text)+'" WHERE rowid = '+inttostr(bufferCount+1)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note2.Text)+'" WHERE rowid = '+inttostr(bufferCount+2)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note3.Text)+'" WHERE rowid = '+inttostr(bufferCount+3)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note4.Text)+'" WHERE rowid = '+inttostr(bufferCount+4)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note5.Text)+'" WHERE rowid = '+inttostr(bufferCount+5)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note6.Text)+'" WHERE rowid = '+inttostr(bufferCount+6)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note7.Text)+'" WHERE rowid = '+inttostr(bufferCount+7)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note8.Text)+'" WHERE rowid = '+inttostr(bufferCount+8)+';',tmp);
+  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note9.Text)+'" WHERE rowid = '+inttostr(bufferCount+9)+';',tmp);
 
-    ini.WriteString('ITEMS-MASS', 'items['+inttostr(strtoint(main.pageNumber.Caption)*10)+']', memoToIniValues(main.item1,str_end));
-
-    ini.WriteString('ITEMS-MASS', 'items['+inttostr(strtoint(main.pageNumber.Caption)*10+1)+']', memoToIniValues(main.item2,str_end));
-    ini.WriteString('ITEMS-MASS', 'items['+inttostr(strtoint(main.pageNumber.Caption)*10+2)+']', memoToIniValues(main.item3,str_end));
-    ini.WriteString('ITEMS-MASS', 'items['+inttostr(strtoint(main.pageNumber.Caption)*10+3)+']', memoToIniValues(main.item4,str_end));
-    ini.WriteString('ITEMS-MASS', 'items['+inttostr(strtoint(main.pageNumber.Caption)*10+4)+']', memoToIniValues(main.item5,str_end));
-    ini.WriteString('ITEMS-MASS', 'items['+inttostr(strtoint(main.pageNumber.Caption)*10+5)+']', memoToIniValues(main.item6,str_end));
-    ini.WriteString('ITEMS-MASS', 'items['+inttostr(strtoint(main.pageNumber.Caption)*10+6)+']', memoToIniValues(main.item7,str_end));
-    ini.WriteString('ITEMS-MASS', 'items['+inttostr(strtoint(main.pageNumber.Caption)*10+7)+']', memoToIniValues(main.item8,str_end));
-    ini.WriteString('ITEMS-MASS', 'items['+inttostr(strtoint(main.pageNumber.Caption)*10+8)+']', memoToIniValues(main.item9,str_end));
-    ini.WriteString('ITEMS-MASS', 'items['+inttostr(strtoint(main.pageNumber.Caption)*10+9)+']', memoToIniValues(main.item0,str_end));
-
-
-    ini.WriteString('ITEMS-NOTICE-MASS', 'notice['+inttostr(strtoint(main.pageNumber.Caption)*10)+']', memoToIniValues(main.note1,str_end));
-    ini.WriteString('ITEMS-NOTICE-MASS', 'notice['+inttostr(strtoint(main.pageNumber.Caption)*10+1)+']', memoToIniValues(main.note2,str_end));
-    ini.WriteString('ITEMS-NOTICE-MASS', 'notice['+inttostr(strtoint(main.pageNumber.Caption)*10+2)+']', memoToIniValues(main.note3,str_end));
-    ini.WriteString('ITEMS-NOTICE-MASS', 'notice['+inttostr(strtoint(main.pageNumber.Caption)*10+3)+']', memoToIniValues(main.note4,str_end));
-    ini.WriteString('ITEMS-NOTICE-MASS', 'notice['+inttostr(strtoint(main.pageNumber.Caption)*10+4)+']', memoToIniValues(main.note5,str_end));
-    ini.WriteString('ITEMS-NOTICE-MASS', 'notice['+inttostr(strtoint(main.pageNumber.Caption)*10+5)+']', memoToIniValues(main.note6,str_end));
-    ini.WriteString('ITEMS-NOTICE-MASS', 'notice['+inttostr(strtoint(main.pageNumber.Caption)*10+6)+']', memoToIniValues(main.note7,str_end));
-    ini.WriteString('ITEMS-NOTICE-MASS', 'notice['+inttostr(strtoint(main.pageNumber.Caption)*10+7)+']', memoToIniValues(main.note8,str_end));
-    ini.WriteString('ITEMS-NOTICE-MASS', 'notice['+inttostr(strtoint(main.pageNumber.Caption)*10+8)+']', memoToIniValues(main.note9,str_end));
-    ini.WriteString('ITEMS-NOTICE-MASS', 'notice['+inttostr(strtoint(main.pageNumber.Caption)*10+9)+']', memoToIniValues(main.note0,str_end));
-  end else begin
-//    showmessage(inttostr(toMove));
-
-
-
-  end;
+main.status.Panels[0].Text:='Успешно сохранен!'; 
 
 end;
-procedure pageInit(needPageNumber:word);
+procedure pageInitSQL(needPageNumber:word);
  var
   i :word;
-  current :word;//с этой позиции будем читать
+  bufferCount :word;//с этой позиции будем читать
+  str:string;
 begin
       //сразу читаем numberPage
       main.pageNumber.Caption := inttostr(needPageNumber);
+      cmdSql(0,'select t.title from titles t where t.rowid = '+main.pageNumber.Caption+';',str);   main.titleItems.Text:= trim(str);
+      bufferCount:=strtoint(main.pageNumber.Caption) * 10;
+            
 
-      //titleItems.itemIndex
-      try
-        //пытаемся прочитать с файла title
-          for i := 0 to numberPageMax do begin
-            main.titleItems.Items[i]:=ini.ReadString('TITLES-MASS', 'title['+inttostr(i)+']', '*none*');;
-          end;
+      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount)+';',str);   main.item0.Text:= trim(str);
+      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+1)+';',str); main.item1.Text:= trim(str);
+      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+2)+';',str); main.item2.Text:= trim(str);
+      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+3)+';',str); main.item3.Text:= trim(str);
+      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+4)+';',str); main.item4.Text:= trim(str);
+      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+5)+';',str); main.item5.Text:= trim(str);
+      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+6)+';',str); main.item6.Text:= trim(str);
+      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+7)+';',str); main.item7.Text:= trim(str);
+      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+8)+';',str); main.item8.Text:= trim(str);
+      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+9)+';',str); main.item9.Text:= trim(str);
 
-          main.titleItems.ItemIndex:=needPageNumber;
-          // Пытаемся прочитать notices и items
-          current := needPageNumber*10;
-          main.status.Panels[3].Text:=inttostr(current);
-          main.item1.Text := replaceSub(ini.ReadString('ITEMS-MASS', 'items['+inttostr(current)+']', '*none*'),str_end,#13#10);
-          main.item2.Text := replaceSub(ini.ReadString('ITEMS-MASS', 'items['+inttostr(current+1)+']', '*none*'),str_end,#13#10);
-          main.item3.Text := replaceSub(ini.ReadString('ITEMS-MASS', 'items['+inttostr(current+2)+']', '*none*'),str_end,#13#10);
-          main.item4.Text := replaceSub(ini.ReadString('ITEMS-MASS', 'items['+inttostr(current+3)+']', '*none*'),str_end,#13#10);
-          main.item5.Text := replaceSub(ini.ReadString('ITEMS-MASS', 'items['+inttostr(current+4)+']', '*none*'),str_end,#13#10);
-          main.item6.Text := replaceSub(ini.ReadString('ITEMS-MASS', 'items['+inttostr(current+5)+']', '*none*'),str_end,#13#10);
-          main.item7.Text := replaceSub(ini.ReadString('ITEMS-MASS', 'items['+inttostr(current+6)+']', '*none*'),str_end,#13#10);
-          main.item8.Text := replaceSub(ini.ReadString('ITEMS-MASS', 'items['+inttostr(current+7)+']', '*none*'),str_end,#13#10);
-          main.item9.Text := replaceSub(ini.ReadString('ITEMS-MASS', 'items['+inttostr(current+8)+']', '*none*'),str_end,#13#10);
-          main.item0.Text := replaceSub(ini.ReadString('ITEMS-MASS', 'items['+inttostr(current+9)+']', '*none*'),str_end,#13#10);
-
-          main.note1.Text := replaceSub(ini.ReadString('ITEMS-NOTICE-MASS', 'notice['+inttostr(current)+']', '*none*'),str_end,#13#10);
-          main.note2.Text := replaceSub(ini.ReadString('ITEMS-NOTICE-MASS', 'notice['+inttostr(current+1)+']', '*none*'),str_end,#13#10);
-          main.note3.Text := replaceSub(ini.ReadString('ITEMS-NOTICE-MASS', 'notice['+inttostr(current+2)+']', '*none*'),str_end,#13#10);
-          main.note4.Text := replaceSub(ini.ReadString('ITEMS-NOTICE-MASS', 'notice['+inttostr(current+3)+']', '*none*'),str_end,#13#10);
-          main.note5.Text := replaceSub(ini.ReadString('ITEMS-NOTICE-MASS', 'notice['+inttostr(current+4)+']', '*none*'),str_end,#13#10);
-          main.note6.Text := replaceSub(ini.ReadString('ITEMS-NOTICE-MASS', 'notice['+inttostr(current+5)+']', '*none*'),str_end,#13#10);
-          main.note7.Text := replaceSub(ini.ReadString('ITEMS-NOTICE-MASS', 'notice['+inttostr(current+6)+']', '*none*'),str_end,#13#10);
-          main.note8.Text := replaceSub(ini.ReadString('ITEMS-NOTICE-MASS', 'notice['+inttostr(current+7)+']', '*none*'),str_end,#13#10);
-          main.note9.Text := replaceSub(ini.ReadString('ITEMS-NOTICE-MASS', 'notice['+inttostr(current+8)+']', '*none*'),str_end,#13#10);
-          main.note0.Text := replaceSub(ini.ReadString('ITEMS-NOTICE-MASS', 'notice['+inttostr(current+9)+']', '*none*'),str_end,#13#10);
-
-
-
-      finally
-
-      end;
-
-    //ShowMessage(  ComboBox1.items[0]);
-//    main.titleItems.itemIndex := 0;
-
+      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount)+';',str);   main.note0.Text:= trim(str);
+      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+1)+';',str); main.note1.Text:= trim(str);
+      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+2)+';',str); main.note2.Text:= trim(str);
+      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+3)+';',str); main.note3.Text:= trim(str);
+      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+4)+';',str); main.note4.Text:= trim(str);
+      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+5)+';',str); main.note5.Text:= trim(str);
+      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+6)+';',str); main.note6.Text:= trim(str);
+      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+7)+';',str); main.note7.Text:= trim(str);
+      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+8)+';',str); main.note8.Text:= trim(str);
+      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+9)+';',str); main.note9.Text:= trim(str);
+      main.status.Panels[0].Text:='ok'; 
 end;
 
  procedure goUp(a:word);
@@ -541,8 +555,8 @@ begin
     ClipBoard.SetTextBuf(PChar(currentTime+#13#10+'-----------------'+#13#10));
     buffer.tablo.Caption := currentTime;
     buffer.Caption := 'Текущее время:';
-    buffer.StatusBar1.Panels[0].Text := '';
-    buffer.StatusBar1.Panels[1].Text := '';
+//    buffer.StatusBar1.Panels[0].Text := '';
+//    buffer.StatusBar1.Panels[1].Text := '';
     keybd_event(Ord('V'),0,0,0);
     keybd_event(Ord('V'),0,KEYEVENTF_KEYUP,0);
   end;
@@ -562,8 +576,8 @@ begin
     ClipBoard.SetTextBuf(PChar(bodyText));
     buffer.tablo.Caption := currentTime + bodyText;
     buffer.Caption := 'Отчет по звонку:';
-    buffer.StatusBar1.Panels[0].Text := '';
-    buffer.StatusBar1.Panels[1].Text := '';
+//    buffer.StatusBar1.Panels[0].Text := '';
+//    buffer.StatusBar1.Panels[1].Text := '';
     keybd_event(Ord('V'),0,0,0);
     keybd_event(Ord('V'),0,KEYEVENTF_KEYUP,0);
   end;
@@ -662,9 +676,15 @@ begin
 end;
 
 procedure Tmain.empbutton1Click(Sender: TObject);
+var str:string;
 begin
 //readItem();
 //insertItem();
+
+//pageInitsql(1);
+     str:='w';
+showmessage( IntToStr(ord(str[1])));
+//showmessage( IntToStr(ord('')));
 end;
 
 procedure Tmain.paste0Click(Sender: TObject);
@@ -711,10 +731,10 @@ end;
 
 procedure Tmain.followingPageClick(Sender: TObject);
 begin
-  if (numberPageMax=strtoint(pageNumber.Caption)) then pageNumber.Caption:='0'
+  if (numberPageMax=strtoint(pageNumber.Caption)) then pageNumber.Caption:='1'
     else pageNumber.Caption := inttostr(strtoint(pageNumber.Caption)+1);
 
-  pageInit(strtoint(main.pageNumber.Caption));
+  pageInitSql(strtoint(main.pageNumber.Caption));
   buffer.StatusBar1.Panels[1].Text:=main.titleItems.Text;
   buffer.StatusBar1.Panels[0].Text:='page: '+main.pageNumber.Caption;
 
@@ -722,9 +742,9 @@ begin
 end;
 procedure Tmain.previousPageClick(Sender: TObject);
 begin
-if (strtoint(pageNumber.Caption)=0) then pageNumber.Caption := inttostr(numberPageMax)
+if (strtoint(pageNumber.Caption)=1) then pageNumber.Caption := inttostr(numberPageMax)
   else pageNumber.Caption := inttostr(strtoint(pageNumber.Caption)-1);
-  pageInit(strtoint(main.pageNumber.Caption));
+  pageInitSql(strtoint(main.pageNumber.Caption));
   buffer.StatusBar1.Panels[1].Text:=main.titleItems.Text;
   buffer.StatusBar1.Panels[0].Text:='page: '+main.pageNumber.Caption;
 
@@ -732,7 +752,7 @@ end;
 
 procedure Tmain.titleItemsSelect(Sender: TObject);
 begin
-  pageinit(main.titleItems.ItemIndex);
+  pageinitsql(main.titleItems.ItemIndex);
 end;
 
 procedure Tmain.changeTitleClick(Sender: TObject);
@@ -769,34 +789,40 @@ const
 
   VK_previous = $51;
   VK_following = $45;
-
+ // Спец символы
+   qQq   = #39; // '
+   
+ 
 var
 //sqlite
 
 
 //////////
   x,y,i: word;
-  a,b: string;
+  a,b,tmp: string;
   fileSettingsName:string;
   dbName : string;
   itemsMass,noticesMass,titlesMass: Array [0..10000] of string;
-
+  names: TStringList;
 begin
+
   //Инициализация переменных
-  numberPageMax := 99;    // Число страниц (по умолчанию)
-  numberPageCurrent := 0; // Текущая страница
-  currentVersion:='0.1.0.5';
-  str_end := '#NL#'; // Задание маркера конца строки
-  status.Panels[0].text:='';
   status.Panels[1].text:='инициализация данных...';
+  numberPageMax := 109;    // Число страниц (по умолчанию)
+  numberPageCurrent := 0; // Текущая страница
+  currentVersion:='0.2.0.0 Beta';
+  str_end := '#NL#'; // Задание маркера конца строки
+  sql_znak_in:='';
+  sql_znak_out:='';
+  status.Panels[0].text:='';
+
 // MOD_ALT = 1;
 // MOD_CONTROL = 2;
   modUse := 2;
-  fileSettingsName := GetCurrentDir + '\settings.ini';
+//  fileSettingsName := GetCurrentDir + '\settings.ini';
   dbName:=GetCurrentDir + '\base.db';
-  main.BufferConnection.Params.Add('Database='+dbName);
+ main.BufferConnection.Params.Add('Database='+dbName);
   main.Caption := main.Caption + ' ' + currentVersion;
-
 
 //SQL - запросы
   // create table buffers (item text,notice text);
@@ -812,59 +838,25 @@ begin
   //  WHERE CustomerName='Alfreds Futterkiste';
 
   // Проверка на существование base.db в каталоге где запускается приложение если не существует инициализируем таблицу.
+
   if not FileExists(dbName) then begin
+    //создаю бд и записываю рандомные значения
+    showmessage('Буду сосздавать базу (минутку после нажатия ОК) ');
     main.BufferConnection.Connected:=true;
-    cmdSql(1,'create table buffers (title_id int,item text,notice text);');
-    cmdSql(1,'create table titles (title text);');
-    cmdSql(1,'create table shortcuts (shortcurt text,cmd text);');
-    cmdSql(1,'create table settings (numberPageLast int,numberPageMax int);');
+    cmdSql(1,'create table buffers (item text,notice text);',tmp);
+    cmdSql(1,'create table titles (title text);',tmp);
+    cmdSql(1,'create table shortcuts (shortcurt text,cmd text);',tmp);
+    cmdSql(1,'create table settings (numberPageLast int,numberPageMax int);',tmp);
 
-    for i := 1 to numberPageMax do cmdSql(1,'INSERT INTO titles (title) VALUES ("title '+ inttostr(i) +'");');
-    for i := 1 to numberPageMax*10 do cmdSql(1,'INSERT INTO buffers (title_id,item,notice) VALUES (0,"item '+inttostr(i)+'", "notice '+inttostr(i)+'");');
-    cmdSql(1,'INSERT INTO settings (numberPageLast, numberPageMax) VALUES (0, 99);');
+    for i := 1 to numberPageMax do cmdSql(1,'INSERT INTO titles (title) VALUES ("title '+ inttostr(i) +'");',tmp);
+    for i := 1 to numberPageMax*10 do cmdSql(1,'INSERT INTO buffers (,item,notice) VALUES ("item '+inttostr(i)+'", "notice '+inttostr(i)+'");',tmp);
+    cmdSql(1,'INSERT INTO settings (numberPageLast, numberPageMax) VALUES (0, 99);',tmp);
   end else begin
 
   end;
+    cmdSql(0,'select s.numberPageLast from settings s where s.rowid = 1;',tmp); numberPageCurrent:=strtoint(tmp);
+   pageInitSql(numberPageCurrent);
 
-
-  ini := TIniFile.Create(fileSettingsName);
-
-  if FileExists(fileSettingsName)then begin
-      // Если файл существует пытаемся прочитать его
-      ini := TIniFile.Create(fileSettingsName);
-      numberPageCurrent:=ini.ReadInteger('settings', 'IdPagelAST', 9);
-      numberPageMax:=ini.ReadInteger('settings', 'numberPageMax', 99);
-      bufferG:=ini.Readstring('settings', 'buferG', 'ok');
-
-  end else begin
-    // Если не существует пытаемся создать файл
-    try
-       ini.WriteInteger('settings', 'IdPagelAST', 0);
-
-       ini.WriteString('settings','numberPageMax', '99');
-       ini.WriteString('settings','buferG', '0');
-
-
-       for i := 0 to 99 do begin
-          titlesMass[i] := 'title'+intToStr(i);
-          ini.WriteString('TITLES-MASS', 'title['+inttostr(i)+']', inttostr(i)+' page');
-       end;
-
-       for i := 0 to 990 do begin
-          itemsMass[i] := 'Item'+intToStr(i);
-          ini.WriteString('ITEMS-MASS', 'items['+inttostr(i)+']', 'буфер: '+inttostr(i));
-
-          noticesMass[i] := 'notice';
-          ini.WriteString('ITEMS-NOTICE-MASS', 'notice['+inttostr(i)+']', ' ');
-       end;
-
-    finally
-
-    end;
-
-  end;
-    pageinit(numberPageCurrent);
-    main.titleItems.DropDownCount:=39;
 
    //// для горячей клавиши//
 
@@ -896,7 +888,7 @@ end;
 procedure Tmain.FormDestroy(Sender: TObject);
 begin
 //
-  savePage(main.titleItems.Text,-1);
+  savePageSql();
 //горячие клавиши
   UnRegisterHotkey(Handle, id1); GlobalDeleteAtom(id1);
   UnRegisterHotkey(Handle, id2); GlobalDeleteAtom(id2);
@@ -1190,13 +1182,17 @@ begin
       else main.FormStyle:=fsNormal;
 end;
 procedure Tmain.N3Click(Sender: TObject);
+var tmp : string;
 begin
-  savePage(main.titleItems.Text,-1);
-  main.status.Panels[0].Text:='Успешно сохранен!';
+  savePageSql();
+
+  
 end;
 procedure Tmain.N4Click(Sender: TObject);
+
 begin
 settings.Show;
+
 settings.EditNumberMaxPage.Text :=ini.Readstring('settings', 'numberPageMax', '99');
 settings.EditBuferG.Text:=ini.Readstring('settings', 'buferG', '9');
 
@@ -1251,7 +1247,7 @@ begin
     tmpMass[10]:= main.note0.Text;
     tmpMass[20]:= main.titleItems.Text;
 
-    pageInit(strtoint(newNumberPage));
+    pageinitsql(strtoint(newNumberPage));
 
     tmpMass[31]:= main.item1.Text;
     tmpMass[32]:= main.item2.Text;
@@ -1297,8 +1293,8 @@ begin
     main.note0.Text := tmpMass[10];
     main.titleItems.Text := tmpMass[20];
 
-    savePage(main.titleItems.Text,-1);
-    pageInit(strtoint(oldNumberPage));
+    savePageSql();
+    pageinitsql(strtoint(oldNumberPage));
 
     main.item1.Text := tmpMass[31];
     main.item2.Text := tmpMass[32];
@@ -1321,9 +1317,9 @@ begin
     main.note9.Text := tmpMass[49];
     main.note0.Text := tmpMass[40];
     main.titleItems.Text := tmpMass[50];
-    savePage(main.titleItems.Text,-1);
+    savePageSql();
 
-    pageInit(strtoint(newNumberPage));
+    pageinitsql(strtoint(newNumberPage));
   end;
 
 
@@ -1336,7 +1332,7 @@ var a: word;
 begin
 a := strtoint(InputBox('Перейти на страницу:', '№', '0'));
 if (a >= 0) and (a <= numberPageMax) then begin
-  pageinit(a);
+  pageinitsql(a);
   main.status.Panels.Items[1].Text:='перешел';
   end else main.status.Panels.Items[1].Text:= 'страница не найдена';
 
