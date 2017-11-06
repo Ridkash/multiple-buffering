@@ -37,12 +37,16 @@ settings.Hide;
 end;
 
 procedure Tsettings.ButtonSaveClick(Sender: TObject);
+var tmp :string;
+pageMax:word;
 begin
-//    Unit1.ini.WriteString('settings', 'IdPagelAST', main.pageNumber.Caption);
-//    Unit1.ini.WriteString('settings', 'numberPageMax', settings.EditNumberMaxPage.Text);
-//    Unit1.ini.WriteString('settings', 'buferG', settings.EditBuferG.Text);
-//    main.status.Panels.Items[1].Text:='настройки сохранены';
+    main.status.Panels.Items[1].Text:='настройки сохранены';
     settings.Hide;
+    main.cmdSql(1,'update shortcuts SET cmd="'+trim(settings.EditBuferG.Text)+'" where shortcut="g"',tmp);
+    pageMax:=strtoint(settings.EditNumberMaxPage.Text);
+    main.cmdSql(1,'update settings SET numberPageMax='+inttostr(pageMax)+' where rowid=1',tmp);
+    main.numberPageMax:= pageMax;
+    main.pageInitSQL(pageMax);
 end;
 
 end.

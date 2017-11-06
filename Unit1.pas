@@ -147,15 +147,20 @@ type
     id_C_1, id_C_2, id_C_3, id_C_4, id_C_5,id_C_6, id_C_7, id_C_8, id_C_9, id_C_0, id_C_T, id_C_SB, id_C_G, id_C_S: Integer;
     id_A_1, id_A_2, id_A_3, id_A_4, id_A_5,id_A_6, id_A_7, id_A_8, id_A_9, id_A_0, id_A_T: Integer;
     id_following,id_previous:integer;
+
     procedure WMHotKey(var Msg: TWMHotKey); message WM_HOTKEY;
 
   public
     { Public declarations }
+    numberPageMax:word;      // число страниц копипаста по умолчанию 99 страниц переменна€ равна 99;
+    procedure cmdSql( cmd :word; sql:string; var res:string);
+    procedure pageInitSQL(needPageNumber:word);
+
   end;
 
 var
   main: Tmain;
-  numberPageMax:word;      // число страниц копипаста по умолчанию 99 страниц переменна€ равна 99;
+
   numberPageCurrent:word;  // “екуща€ страница
   ini: TIniFile;           //ини файл настроек
   str_end: string;         // маркер конца строки
@@ -175,16 +180,7 @@ implementation
 // SQL inject
 //  Query->ExecSQL();
 //  Query->Open();
-
-
-procedure readItem();
-var str: string;
-
-begin
-  showmessage(ExtractFilePath(paramstr(0))+'им€ базы данных');
-end;
-
-procedure cmdSql( cmd :word; sql:string; var res:string);
+procedure Tmain.cmdSql( cmd :word; sql:string; var res:string);
 var str: string;
     names: TStringList;
     i: Integer;
@@ -195,7 +191,7 @@ res:='';
 main.query.SQL.Text:=sql;
   case cmd of
 //    0 - дл€ SELECT, 1 -  дл€ INSERT, CREATE, update...
-    0 : begin 
+    0 : begin
           main.query.Open;
         if not main.query.IsEmpty then
         begin
@@ -219,12 +215,14 @@ main.query.SQL.Text:=sql;
           end;
         end;
 
-          
+
     end;
     1 : main.query.ExecSQL();
     else ShowMessage(' неизвестна€ команда');
   end;
 end;
+
+
 
 
 
@@ -240,25 +238,6 @@ var
 begin
 
   result :=(inttostr(inStr.Length));
-end;
-
-function memoToIniValues(item:Tmemo;str_end:string):string;
-var
-  i:word;
-  tmpstr: string;
-begin
-  // формирование значени€ из исходных данных ...
-  tmpstr:='';
-
-  Case item.lines.count of
-    0 : memoToIniValues:='настраиваетс€ в *.ini*';
-    1 : memoToIniValues:= item.lines[0] ;
-    else begin for i:=0 to (item.lines.count - 2) do tmpstr:=tmpstr + item.lines[i] + str_end;;
-      main.status.Panels[1].text:=inttostr(item.lines.count);
-      memoToIniValues:=tmpstr + item.lines[item.lines.count - 1];
-    end;
-  End;
-
 end;
 
 function dropLines(inStr: string):string;
@@ -309,38 +288,38 @@ var
   
 begin
 //  replaceSub();
-  
-  cmdSql(1,'UPDATE titles SET title = "'+trim(main.titleItems.Text)+'" WHERE rowid = '+main.pageNumber.Caption+';',tmp);
+
+  main.cmdSql(1,'UPDATE titles SET title = "'+trim(main.titleItems.Text)+'" WHERE rowid = '+main.pageNumber.Caption+';',tmp);
 
   bufferCount:=strtoint(main.pageNumber.Caption) * 10;
-  cmdSql(1,'UPDATE settings SET numberPageLast = '+trim(main.pageNumber.Caption)+' WHERE rowid = 1;',tmp);
-  
-  sql:= 'UPDATE buffers SET item="'+trim(main.item0.Text)+'" WHERE rowid = '+inttostr(bufferCount)+';'; cmdSql(1,sql,tmp);
-  sql:='UPDATE buffers SET item = "'+trim(main.item1.Text)+'" WHERE rowid = '+inttostr(bufferCount+1)+';'; cmdSql(1,sql,tmp);
-  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item2.Text)+'" WHERE rowid = '+inttostr(bufferCount+2)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item3.Text)+'" WHERE rowid = '+inttostr(bufferCount+3)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item4.Text)+'" WHERE rowid = '+inttostr(bufferCount+4)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item5.Text)+'" WHERE rowid = '+inttostr(bufferCount+5)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item6.Text)+'" WHERE rowid = '+inttostr(bufferCount+6)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item7.Text)+'" WHERE rowid = '+inttostr(bufferCount+7)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item8.Text)+'" WHERE rowid = '+inttostr(bufferCount+8)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item9.Text)+'" WHERE rowid = '+inttostr(bufferCount+9)+';',tmp);
+  main.cmdSql(1,'UPDATE settings SET numberPageLast = '+trim(main.pageNumber.Caption)+' WHERE rowid = 1;',tmp);
 
-  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note0.Text)+'" WHERE rowid = '+inttostr(bufferCount)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note1.Text)+'" WHERE rowid = '+inttostr(bufferCount+1)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note2.Text)+'" WHERE rowid = '+inttostr(bufferCount+2)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note3.Text)+'" WHERE rowid = '+inttostr(bufferCount+3)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note4.Text)+'" WHERE rowid = '+inttostr(bufferCount+4)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note5.Text)+'" WHERE rowid = '+inttostr(bufferCount+5)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note6.Text)+'" WHERE rowid = '+inttostr(bufferCount+6)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note7.Text)+'" WHERE rowid = '+inttostr(bufferCount+7)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note8.Text)+'" WHERE rowid = '+inttostr(bufferCount+8)+';',tmp);
-  cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note9.Text)+'" WHERE rowid = '+inttostr(bufferCount+9)+';',tmp);
+  sql:= 'UPDATE buffers SET item="'+trim(main.item0.Text)+'" WHERE rowid = '+inttostr(bufferCount)+';'; main.cmdSql(1,sql,tmp);
+  sql:='UPDATE buffers SET item = "'+trim(main.item1.Text)+'" WHERE rowid = '+inttostr(bufferCount+1)+';'; main.cmdSql(1,sql,tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item2.Text)+'" WHERE rowid = '+inttostr(bufferCount+2)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item3.Text)+'" WHERE rowid = '+inttostr(bufferCount+3)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item4.Text)+'" WHERE rowid = '+inttostr(bufferCount+4)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item5.Text)+'" WHERE rowid = '+inttostr(bufferCount+5)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item6.Text)+'" WHERE rowid = '+inttostr(bufferCount+6)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item7.Text)+'" WHERE rowid = '+inttostr(bufferCount+7)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item8.Text)+'" WHERE rowid = '+inttostr(bufferCount+8)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item9.Text)+'" WHERE rowid = '+inttostr(bufferCount+9)+';',tmp);
+
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note0.Text)+'" WHERE rowid = '+inttostr(bufferCount)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note1.Text)+'" WHERE rowid = '+inttostr(bufferCount+1)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note2.Text)+'" WHERE rowid = '+inttostr(bufferCount+2)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note3.Text)+'" WHERE rowid = '+inttostr(bufferCount+3)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note4.Text)+'" WHERE rowid = '+inttostr(bufferCount+4)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note5.Text)+'" WHERE rowid = '+inttostr(bufferCount+5)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note6.Text)+'" WHERE rowid = '+inttostr(bufferCount+6)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note7.Text)+'" WHERE rowid = '+inttostr(bufferCount+7)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note8.Text)+'" WHERE rowid = '+inttostr(bufferCount+8)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note9.Text)+'" WHERE rowid = '+inttostr(bufferCount+9)+';',tmp);
 
 main.status.Panels[0].Text:='”спешно сохранен!'; 
 
 end;
-procedure pageInitSQL(needPageNumber:word);
+procedure TMain.pageInitSQL(needPageNumber:word);
  var
   i :word;
   bufferCount :word;//с этой позиции будем читать
@@ -348,32 +327,32 @@ procedure pageInitSQL(needPageNumber:word);
 begin
       //сразу читаем numberPage
       main.pageNumber.Caption := inttostr(needPageNumber);
-      cmdSql(0,'select t.title from titles t where t.rowid = '+main.pageNumber.Caption+';',str);   main.titleItems.Text:= trim(str);
+      main.cmdSql(0,'select t.title from titles t where t.rowid = '+main.pageNumber.Caption+';',str);   main.titleItems.Text:= trim(str);
       bufferCount:=strtoint(main.pageNumber.Caption) * 10;
             
 
-      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount)+';',str);   main.item0.Text:= trim(str);
-      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+1)+';',str); main.item1.Text:= trim(str);
-      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+2)+';',str); main.item2.Text:= trim(str);
-      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+3)+';',str); main.item3.Text:= trim(str);
-      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+4)+';',str); main.item4.Text:= trim(str);
-      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+5)+';',str); main.item5.Text:= trim(str);
-      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+6)+';',str); main.item6.Text:= trim(str);
-      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+7)+';',str); main.item7.Text:= trim(str);
-      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+8)+';',str); main.item8.Text:= trim(str);
-      cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+9)+';',str); main.item9.Text:= trim(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount)+';',str);   main.item0.Text:= trim(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+1)+';',str); main.item1.Text:= trim(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+2)+';',str); main.item2.Text:= trim(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+3)+';',str); main.item3.Text:= trim(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+4)+';',str); main.item4.Text:= trim(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+5)+';',str); main.item5.Text:= trim(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+6)+';',str); main.item6.Text:= trim(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+7)+';',str); main.item7.Text:= trim(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+8)+';',str); main.item8.Text:= trim(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+9)+';',str); main.item9.Text:= trim(str);
 
-      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount)+';',str);   main.note0.Text:= trim(str);
-      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+1)+';',str); main.note1.Text:= trim(str);
-      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+2)+';',str); main.note2.Text:= trim(str);
-      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+3)+';',str); main.note3.Text:= trim(str);
-      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+4)+';',str); main.note4.Text:= trim(str);
-      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+5)+';',str); main.note5.Text:= trim(str);
-      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+6)+';',str); main.note6.Text:= trim(str);
-      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+7)+';',str); main.note7.Text:= trim(str);
-      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+8)+';',str); main.note8.Text:= trim(str);
-      cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+9)+';',str); main.note9.Text:= trim(str);
-      main.status.Panels[0].Text:='ok'; 
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount)+';',str);   main.note0.Text:= trim(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+1)+';',str); main.note1.Text:= trim(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+2)+';',str); main.note2.Text:= trim(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+3)+';',str); main.note3.Text:= trim(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+4)+';',str); main.note4.Text:= trim(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+5)+';',str); main.note5.Text:= trim(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+6)+';',str); main.note6.Text:= trim(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+7)+';',str); main.note7.Text:= trim(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+8)+';',str); main.note8.Text:= trim(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+9)+';',str); main.note9.Text:= trim(str);
+      main.status.Panels[0].Text:='ok';
 end;
 
  procedure goUp(a:word);
@@ -790,8 +769,8 @@ const
   VK_previous = $51;
   VK_following = $45;
  // —пец символы
-   qQq   = #39; // '
-   
+//   qQq   = #39; // '
+
  
 var
 //sqlite
@@ -802,18 +781,15 @@ var
   a,b,tmp: string;
   fileSettingsName:string;
   dbName : string;
-  itemsMass,noticesMass,titlesMass: Array [0..10000] of string;
   names: TStringList;
 begin
 
   //»нициализаци€ переменных
   status.Panels[1].text:='инициализаци€ данных...';
-  numberPageMax := 109;    // „исло страниц (по умолчанию)
-  numberPageCurrent := 0; // “екуща€ страница
-  currentVersion:='0.2.0.0 Beta';
-  str_end := '#NL#'; // «адание маркера конца строки
-  sql_znak_in:='';
-  sql_znak_out:='';
+  numberPageMax := 99;    // „исло страниц (по умолчанию)
+  numberPageCurrent := 1; // “екуща€ страница
+  currentVersion:='0.2.0.1 Beta';
+
   status.Panels[0].text:='';
 
 // MOD_ALT = 1;
@@ -821,7 +797,7 @@ begin
   modUse := 2;
 //  fileSettingsName := GetCurrentDir + '\settings.ini';
   dbName:=GetCurrentDir + '\base.db';
- main.BufferConnection.Params.Add('Database='+dbName);
+  main.BufferConnection.Params.Add('Database='+dbName);
   main.Caption := main.Caption + ' ' + currentVersion;
 
 //SQL - запросы
@@ -845,17 +821,23 @@ begin
     main.BufferConnection.Connected:=true;
     cmdSql(1,'create table buffers (item text,notice text);',tmp);
     cmdSql(1,'create table titles (title text);',tmp);
-    cmdSql(1,'create table shortcuts (shortcurt text,cmd text);',tmp);
+    cmdSql(1,'create table shortcuts (shortcut text,cmd text);',tmp);
     cmdSql(1,'create table settings (numberPageLast int,numberPageMax int);',tmp);
 
     for i := 1 to numberPageMax do cmdSql(1,'INSERT INTO titles (title) VALUES ("title '+ inttostr(i) +'");',tmp);
-    for i := 1 to numberPageMax*10 do cmdSql(1,'INSERT INTO buffers (,item,notice) VALUES ("item '+inttostr(i)+'", "notice '+inttostr(i)+'");',tmp);
-    cmdSql(1,'INSERT INTO settings (numberPageLast, numberPageMax) VALUES (0, 99);',tmp);
+
+    for i := 1 to numberPageMax*10+10 do cmdSql(1,'INSERT INTO buffers (item,notice) VALUES ("item '+inttostr(i)+'", "notice '+inttostr(i)+'");',tmp);
+    cmdSql(1,'INSERT INTO settings (numberPageLast, numberPageMax) VALUES (1, '+inttostr(numberPageMax)+');',tmp);
+
+    cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("g", "0");',tmp);
   end else begin
 
   end;
-    cmdSql(0,'select s.numberPageLast from settings s where s.rowid = 1;',tmp); numberPageCurrent:=strtoint(tmp);
-   pageInitSql(numberPageCurrent);
+//      showmessage('is one line');
+ cmdSql(0,'select s.numberPageLast from settings s where s.rowid = 1;',tmp); numberPageCurrent:=strtoint(tmp);
+ pageInitSql(numberPageCurrent);
+
+ cmdSql(0,'select s.numberPageMax from settings s where s.rowid = 1;',tmp); numberPageMax:=strtoint(tmp);
 
 
    //// дл€ гор€чей клавиши//
@@ -1189,12 +1171,15 @@ begin
   
 end;
 procedure Tmain.N4Click(Sender: TObject);
-
+var tmp:string;
 begin
 settings.Show;
 
-settings.EditNumberMaxPage.Text :=ini.Readstring('settings', 'numberPageMax', '99');
-settings.EditBuferG.Text:=ini.Readstring('settings', 'buferG', '9');
+cmdSql(0,'select s.numberPageMax FROM settings s where s.rowid=1',tmp);
+settings.EditNumberMaxPage.Text :=trim(tmp);
+
+cmdSql(0,'select s.cmd FROM shortcuts s where s.rowid=1',tmp);
+settings.EditBuferG.Text :=trim(tmp);
 
 end;
 procedure Tmain.N5Click(Sender: TObject);

@@ -1,6 +1,10 @@
-Win32/Debug/*.ini
+App/*.ini
+App/*.db
 __history/*
 __recovery/*
 *.stat
 *.local
 *.identcache
+*.dcu
+*.ico
+*.db-journal
