@@ -155,6 +155,8 @@ type
     numberPageMax:word;      // число страниц копипаста по умолчанию 99 страниц переменная равна 99;
     procedure cmdSql( cmd :word; sql:string; var res:string);
     procedure pageInitSQL(needPageNumber:word);
+    function trimInSql(str:string): string;
+    function trimoutSql(str:string): string;
 
   end;
 
@@ -279,6 +281,15 @@ begin
 
   result:=rslt + str
 end;
+function Tmain.trimInSql(str:string): string;
+begin
+  result:= replaceSub(trim(str),'"','#3696#');
+end;
+function Tmain.trimoutSql(str:string): string;
+begin
+  result:= replaceSub(trim(str),'#3696#','"');
+end;
+
 /////
 procedure savePageSQL();
 var
@@ -289,32 +300,32 @@ var
 begin
 //  replaceSub();
 
-  main.cmdSql(1,'UPDATE titles SET title = "'+trim(main.titleItems.Text)+'" WHERE rowid = '+main.pageNumber.Caption+';',tmp);
+  main.cmdSql(1,'UPDATE titles SET title = "'+main.trimInSql(main.titleItems.Text)+'" WHERE rowid = '+main.pageNumber.Caption+';',tmp);
 
   bufferCount:=strtoint(main.pageNumber.Caption) * 10;
   main.cmdSql(1,'UPDATE settings SET numberPageLast = '+trim(main.pageNumber.Caption)+' WHERE rowid = 1;',tmp);
 
-  sql:= 'UPDATE buffers SET item="'+trim(main.item0.Text)+'" WHERE rowid = '+inttostr(bufferCount)+';'; main.cmdSql(1,sql,tmp);
-  sql:='UPDATE buffers SET item = "'+trim(main.item1.Text)+'" WHERE rowid = '+inttostr(bufferCount+1)+';'; main.cmdSql(1,sql,tmp);
-  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item2.Text)+'" WHERE rowid = '+inttostr(bufferCount+2)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item3.Text)+'" WHERE rowid = '+inttostr(bufferCount+3)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item4.Text)+'" WHERE rowid = '+inttostr(bufferCount+4)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item5.Text)+'" WHERE rowid = '+inttostr(bufferCount+5)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item6.Text)+'" WHERE rowid = '+inttostr(bufferCount+6)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item7.Text)+'" WHERE rowid = '+inttostr(bufferCount+7)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item8.Text)+'" WHERE rowid = '+inttostr(bufferCount+8)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET item = "'+trim(main.item9.Text)+'" WHERE rowid = '+inttostr(bufferCount+9)+';',tmp);
+  sql:= 'UPDATE buffers SET item="'+main.trimInSql(main.item0.Text)+'" WHERE rowid = '+inttostr(bufferCount)+';'; main.cmdSql(1,sql,tmp);
+  sql:='UPDATE buffers SET item = "'+main.trimInSql(main.item1.Text)+'" WHERE rowid = '+inttostr(bufferCount+1)+';'; main.cmdSql(1,sql,tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+main.trimInSql(main.item2.Text)+'" WHERE rowid = '+inttostr(bufferCount+2)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+main.trimInSql(main.item3.Text)+'" WHERE rowid = '+inttostr(bufferCount+3)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+main.trimInSql(main.item4.Text)+'" WHERE rowid = '+inttostr(bufferCount+4)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+main.trimInSql(main.item5.Text)+'" WHERE rowid = '+inttostr(bufferCount+5)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+main.trimInSql(main.item6.Text)+'" WHERE rowid = '+inttostr(bufferCount+6)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+main.trimInSql(main.item7.Text)+'" WHERE rowid = '+inttostr(bufferCount+7)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+main.trimInSql(main.item8.Text)+'" WHERE rowid = '+inttostr(bufferCount+8)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET item = "'+main.trimInSql(main.item9.Text)+'" WHERE rowid = '+inttostr(bufferCount+9)+';',tmp);
 
-  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note0.Text)+'" WHERE rowid = '+inttostr(bufferCount)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note1.Text)+'" WHERE rowid = '+inttostr(bufferCount+1)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note2.Text)+'" WHERE rowid = '+inttostr(bufferCount+2)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note3.Text)+'" WHERE rowid = '+inttostr(bufferCount+3)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note4.Text)+'" WHERE rowid = '+inttostr(bufferCount+4)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note5.Text)+'" WHERE rowid = '+inttostr(bufferCount+5)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note6.Text)+'" WHERE rowid = '+inttostr(bufferCount+6)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note7.Text)+'" WHERE rowid = '+inttostr(bufferCount+7)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note8.Text)+'" WHERE rowid = '+inttostr(bufferCount+8)+';',tmp);
-  main.cmdSql(1,'UPDATE buffers SET notice = "'+trim(main.note9.Text)+'" WHERE rowid = '+inttostr(bufferCount+9)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+main.trimInSql(main.note0.Text)+'" WHERE rowid = '+inttostr(bufferCount)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+main.trimInSql(main.note1.Text)+'" WHERE rowid = '+inttostr(bufferCount+1)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+main.trimInSql(main.note2.Text)+'" WHERE rowid = '+inttostr(bufferCount+2)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+main.trimInSql(main.note3.Text)+'" WHERE rowid = '+inttostr(bufferCount+3)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+main.trimInSql(main.note4.Text)+'" WHERE rowid = '+inttostr(bufferCount+4)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+main.trimInSql(main.note5.Text)+'" WHERE rowid = '+inttostr(bufferCount+5)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+main.trimInSql(main.note6.Text)+'" WHERE rowid = '+inttostr(bufferCount+6)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+main.trimInSql(main.note7.Text)+'" WHERE rowid = '+inttostr(bufferCount+7)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+main.trimInSql(main.note8.Text)+'" WHERE rowid = '+inttostr(bufferCount+8)+';',tmp);
+  main.cmdSql(1,'UPDATE buffers SET notice = "'+main.trimInSql(main.note9.Text)+'" WHERE rowid = '+inttostr(bufferCount+9)+';',tmp);
 
 main.status.Panels[0].Text:='Успешно сохранен!'; 
 
@@ -327,31 +338,31 @@ procedure TMain.pageInitSQL(needPageNumber:word);
 begin
       //сразу читаем numberPage
       main.pageNumber.Caption := inttostr(needPageNumber);
-      main.cmdSql(0,'select t.title from titles t where t.rowid = '+main.pageNumber.Caption+';',str);   main.titleItems.Text:= trim(str);
+      main.cmdSql(0,'select t.title from titles t where t.rowid = '+main.pageNumber.Caption+';',str);   main.titleItems.Text:= main.trimoutSql(str);
       bufferCount:=strtoint(main.pageNumber.Caption) * 10;
             
 
-      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount)+';',str);   main.item0.Text:= trim(str);
-      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+1)+';',str); main.item1.Text:= trim(str);
-      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+2)+';',str); main.item2.Text:= trim(str);
-      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+3)+';',str); main.item3.Text:= trim(str);
-      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+4)+';',str); main.item4.Text:= trim(str);
-      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+5)+';',str); main.item5.Text:= trim(str);
-      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+6)+';',str); main.item6.Text:= trim(str);
-      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+7)+';',str); main.item7.Text:= trim(str);
-      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+8)+';',str); main.item8.Text:= trim(str);
-      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+9)+';',str); main.item9.Text:= trim(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount)+';',str);   main.item0.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+1)+';',str); main.item1.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+2)+';',str); main.item2.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+3)+';',str); main.item3.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+4)+';',str); main.item4.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+5)+';',str); main.item5.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+6)+';',str); main.item6.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+7)+';',str); main.item7.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+8)+';',str); main.item8.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+9)+';',str); main.item9.Text:= main.trimoutSql(str);
 
-      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount)+';',str);   main.note0.Text:= trim(str);
-      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+1)+';',str); main.note1.Text:= trim(str);
-      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+2)+';',str); main.note2.Text:= trim(str);
-      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+3)+';',str); main.note3.Text:= trim(str);
-      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+4)+';',str); main.note4.Text:= trim(str);
-      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+5)+';',str); main.note5.Text:= trim(str);
-      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+6)+';',str); main.note6.Text:= trim(str);
-      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+7)+';',str); main.note7.Text:= trim(str);
-      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+8)+';',str); main.note8.Text:= trim(str);
-      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+9)+';',str); main.note9.Text:= trim(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount)+';',str);   main.note0.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+1)+';',str); main.note1.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+2)+';',str); main.note2.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+3)+';',str); main.note3.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+4)+';',str); main.note4.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+5)+';',str); main.note5.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+6)+';',str); main.note6.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+7)+';',str); main.note7.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+8)+';',str); main.note8.Text:= main.trimoutSql(str);
+      main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+9)+';',str); main.note9.Text:= main.trimoutSql(str);
       main.status.Panels[0].Text:='ok';
 end;
 
@@ -661,8 +672,10 @@ begin
 //insertItem();
 
 //pageInitsql(1);
-     str:='w';
-showmessage( IntToStr(ord(str[1])));
+str:='best"lord:"games " ';
+showmessage(str);
+showmessage(replacesub(str,'"','#3132#'));
+showmessage(replacesub(str,'#3132#','"'));
 //showmessage( IntToStr(ord('')));
 end;
 
