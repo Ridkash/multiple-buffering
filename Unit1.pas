@@ -153,6 +153,7 @@ type
   public
     { Public declarations }
     numberPageMax:word;      // число страниц копипаста по умолчанию 99 страниц переменная равна 99;
+    bufferG:string;
     procedure cmdSql( cmd :word; sql:string; var res:string);
     procedure pageInitSQL(needPageNumber:word);
     function trimInSql(str:string): string;
@@ -334,13 +335,17 @@ procedure TMain.pageInitSQL(needPageNumber:word);
  var
   i :word;
   bufferCount :word;//с этой позиции будем читать
-  str:string;
+  str,tmp:string;
 begin
       //сразу читаем numberPage
+
       main.pageNumber.Caption := inttostr(needPageNumber);
       main.cmdSql(0,'select t.title from titles t where t.rowid = '+main.pageNumber.Caption+';',str);   main.titleItems.Text:= main.trimoutSql(str);
       bufferCount:=strtoint(main.pageNumber.Caption) * 10;
-            
+//      showmessage(str);
+      main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="g"',tmp);
+      main.bufferG:= tmp;
+//
 
       main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount)+';',str);   main.item0.Text:= main.trimoutSql(str);
       main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+1)+';',str); main.item1.Text:= main.trimoutSql(str);
@@ -542,7 +547,7 @@ begin
 
   if Msg.HotKey = id_C_T then begin
     currentTime:= FormatDateTime('dd.MM.YYYY hh:mm ',Now);
-    ClipBoard.SetTextBuf(PChar(currentTime+#13#10+'-----------------'+#13#10));
+    ClipBoard.SetTextBuf(PChar(currentTime));
     buffer.tablo.Caption := currentTime;
     buffer.Caption := 'Текущее время:';
 //    buffer.StatusBar1.Panels[0].Text := '';
@@ -553,7 +558,8 @@ begin
 
   if Msg.HotKey = id_C_G then begin
     currentTime:= FormatDateTime('hh:mm, dd.MM.YYYY',Now);
-    bodyText:= unit1.bufferG;
+    bodyText:= main.trimoutSql(main.bufferG);
+
 //    bodyText := 'информация об ОО: '+#13#10#9
 //              +'звонил: '+#13#10#9
 //              +'когда: '+currentTime+#13#10#9
@@ -562,10 +568,10 @@ begin
 //              +'что сделано: '+#13#10
 //              +'-------------------'+#13#10
 //              ;
+    ClipBoard.SetTextBuf(  PChar(bodyText));
 
-    ClipBoard.SetTextBuf(PChar(bodyText));
     buffer.tablo.Caption := currentTime + bodyText;
-    buffer.Caption := 'Отчет по звонку:';
+    buffer.Caption := 'Содержит:';
 //    buffer.StatusBar1.Panels[0].Text := '';
 //    buffer.StatusBar1.Panels[1].Text := '';
     keybd_event(Ord('V'),0,0,0);
@@ -801,7 +807,7 @@ begin
   status.Panels[1].text:='инициализация данных...';
   numberPageMax := 99;    // Число страниц (по умолчанию)
   numberPageCurrent := 1; // Текущая страница
-  currentVersion:='0.2.0.1 Beta';
+  currentVersion:='0.2.0.2 Beta';
 
   status.Panels[0].text:='';
 
@@ -1192,7 +1198,7 @@ cmdSql(0,'select s.numberPageMax FROM settings s where s.rowid=1',tmp);
 settings.EditNumberMaxPage.Text :=trim(tmp);
 
 cmdSql(0,'select s.cmd FROM shortcuts s where s.rowid=1',tmp);
-settings.EditBuferG.Text :=trim(tmp);
+settings.EditBuferG.Text :=main.trimoutSql(tmp);
 
 end;
 procedure Tmain.N5Click(Sender: TObject);

@@ -16,10 +16,14 @@ type
     EditBuferG: TEdit;
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
+
   private
     { Private declarations }
   public
+
     { Public declarations }
+
+
   end;
 
 var
@@ -42,11 +46,12 @@ pageMax:word;
 begin
     main.status.Panels.Items[1].Text:='настройки сохранены';
     settings.Hide;
-    main.cmdSql(1,'update shortcuts SET cmd="'+trim(settings.EditBuferG.Text)+'" where shortcut="g"',tmp);
+    main.cmdSql(1,'update shortcuts SET cmd="'+main.trimInSql(settings.EditBuferG.Text)+'" where shortcut="g"',tmp);
     pageMax:=strtoint(settings.EditNumberMaxPage.Text);
     main.cmdSql(1,'update settings SET numberPageMax='+inttostr(pageMax)+' where rowid=1',tmp);
     main.numberPageMax:= pageMax;
     main.pageInitSQL(pageMax);
+
 end;
 
 end.

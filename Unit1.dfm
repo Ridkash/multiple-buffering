@@ -2,8 +2,8 @@ object main: Tmain
   Left = 0
   Top = 0
   Caption = 'Multi buffer ver.'
-  ClientHeight = 514
-  ClientWidth = 301
+  ClientHeight = 519
+  ClientWidth = 306
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clBlue
@@ -5985,8 +5985,8 @@ object main: Tmain
   end
   object status: TStatusBar
     Left = 0
-    Top = 495
-    Width = 301
+    Top = 500
+    Width = 306
     Height = 19
     Panels = <
       item
