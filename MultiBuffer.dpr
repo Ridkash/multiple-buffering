@@ -2,10 +2,9 @@ program MultiBuffer;
 
 uses
   Vcl.Forms,
-  Unit1 in 'Unit1.pas' {main},
-  Unit2 in 'Unit2.pas' {settings},
-  Unit3 in 'Unit3.pas' {buffer};
-
+  unitMain in 'unitMain.pas' {main},
+  unitSettings in 'unitSettings.pas' {settings},
+  unitBuffer in 'unitBuffer.pas' {buffer};
 
 {$R *.res}
 
@@ -13,10 +12,9 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(Tmain, main);
-  //Application.CreateForm(Tbuffer, buffer);
   Application.CreateForm(Tsettings, settings);
   Application.CreateForm(Tbuffer, buffer);
-
+  unitMain.main.pageInitSQL(unitSettings.settings.numberPage—urrent);
   buffer.FormStyle:=fsStayOnTop;
   main.N5.Checked:=true;
   buffer.Show;

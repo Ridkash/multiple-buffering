@@ -91,6 +91,13 @@
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppEnableHighDPI>true</AppEnableHighDPI>
+        <DCC_ExeOutput>App</DCC_ExeOutput>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_Keys>CompanyName=developers group;FileDescription=$(MSBuildProjectName);FileVersion=0.3.0.0;InternalName=ok;LegalCopyright=Dolet;LegalTrademarks=;OriginalFilename=MultiBufers;ProductName=$(MSBuildProjectName);ProductVersion=0.2.0.0;Comments=you need install this super app!;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
+        <DCC_DcuOutput>App/DCU</DCC_DcuOutput>
+        <VerInfo_MajorVer>0</VerInfo_MajorVer>
+        <VerInfo_MinorVer>3</VerInfo_MinorVer>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -98,27 +105,31 @@
         <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_iOSDevice64)'!=''">
-        <BT_BuildType>Debug</BT_BuildType>
+        <BT_BuildType>Adhoc</BT_BuildType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppEnableHighDPI>true</AppEnableHighDPI>
-        <DCC_ExeOutput>App</DCC_ExeOutput>
+        <DCC_ExeOutput>appDebug</DCC_ExeOutput>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=super developers company;FileDescription=$(MSBuildProjectName);FileVersion=0.3.0.0;InternalName=Dolet;LegalCopyright=By developer&apos;s;LegalTrademarks=;OriginalFilename=MultiBufersDebug;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=You need install this super programs!;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
+        <DCC_DcuOutput>appDebug/DCU</DCC_DcuOutput>
+        <VerInfo_MajorVer>0</VerInfo_MajorVer>
+        <VerInfo_MinorVer>3</VerInfo_MinorVer>
+        <VerInfo_AutoGenVersion>true</VerInfo_AutoGenVersion>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="Unit1.pas">
+        <DCCReference Include="unitMain.pas">
             <Form>main</Form>
         </DCCReference>
-        <DCCReference Include="Unit2.pas">
+        <DCCReference Include="unitSettings.pas">
             <Form>settings</Form>
         </DCCReference>
-        <DCCReference Include="Unit3.pas">
+        <DCCReference Include="unitBuffer.pas">
             <Form>buffer</Form>
         </DCCReference>
         <BuildConfiguration Include="Debug">
@@ -154,6 +165,7 @@
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">False</Platform>
             </Platforms>
+            <ModelSupport>False</ModelSupport>
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>
