@@ -281,7 +281,8 @@ begin
 end;
 procedure Tmain.titleItemsChange(Sender: TObject);
 begin
-  pageinitsql(main.titleItems.ItemIndex);
+//  main.titleItems.ItemIndex:= main.titleItems.ItemIndex-1;
+  pageinitsql(main.titleItems.ItemIndex+1);
 end;
 
 function Tmain.trimInSql(str:string): string;
@@ -337,29 +338,36 @@ procedure TMain.pageInitSQL(needPageNumber:word);
   bufferCount :word;//с этой позиции будем читать
   str,tmp:string;
 begin
-      //сразу читаем numberPage
 
-      main.pageNumber.Caption := inttostr(needPageNumber);
+      // инициализация переменных
+      //title 0...
+      //page 1..
+      //item 10..
+      // needPageNumber - страница на которую нужно переходить
+
+      //проверяю на корректность данные
+//      if (needPageNumber<1) then needPageNumber:=1;
+//       inc(needPageNumber)
+
       //Формирую title
-
-//      showmessage(settings.numberPageMax);
-      for i := 1 to settings.numberPageMax+1 do begin
-
+      //main.titleItems.Items Начинается запись с нуля, тут четко все!
+      for i := 1 to settings.numberPageMax do begin
         main.cmdSql(0,'select t.title from titles t where t.rowid='+inttostr(i)+';',str);
-
-//        if (strtoint(main.pageNumber.Caption)=i) then main.titleItems.Items.Text :=str;;
-
         main.titleItems.Items[i-1]:=str;
       end;
-
-      main.cmdSql(0,'select t.title from titles t where t.rowid = '+main.pageNumber.Caption+';',str);
-      main.titleItems.Text:= main.trimoutSql(str);
+      // Сразу пропишу на форму номер страницы
+      main.pageNumber.Caption := inttostr(needPageNumber);
 
       bufferCount:=strtoint(main.pageNumber.Caption) * 10;
-//      showmessage(str);
+
+      //читаю горячую клавишу
       main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="g"',tmp);
       main.bufferG:= tmp;
-//
+
+      //пишу title
+      main.cmdSql(0,'select t.rowid from titles t where t.rowid = '+inttostr(needPageNumber)+';',str);
+      if strtoint(str)>0 then main.titleItems.ItemIndex:= strtoint(str)-1;
+
 
       main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount)+';',str);   main.item0.Text:= main.trimoutSql(str);
       main.cmdSql(0,'select b.item from buffers b where b.rowid = '+inttostr(bufferCount+1)+';',str); main.item1.Text:= main.trimoutSql(str);
