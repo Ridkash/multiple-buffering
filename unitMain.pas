@@ -86,6 +86,7 @@ type
     query: TSQLQuery;
     BufferConnection: TSQLConnection;
     estbutton1: TMenuItem;
+    N10: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure N3Click(Sender: TObject);
 
@@ -136,6 +137,7 @@ type
     procedure FormPaint(Sender: TObject);
     procedure estbutton1Click(Sender: TObject);
     procedure titleItemsChange(Sender: TObject);
+    procedure N10Click(Sender: TObject);
 
 
   private
@@ -174,6 +176,8 @@ var
 implementation
 
 {$R *.dfm}
+
+uses unitTimer;
 
 
 //Свои процедуры и функции
@@ -698,12 +702,12 @@ procedure Tmain.estbutton1Click(Sender: TObject);
 var str:string;
 begin
 showmessage('good');
-main.cmdSql(1,'DELETE FROM settings;',str);
-main.cmdSql(1,'drop table settings;',str);
-main.cmdSql(1,'create table settings (param text,value text);',str);
-main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageLast","0");',str);
-main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageMax","99");',str);
-showmessage('таблица settings пересоздана');
+//main.cmdSql(1,'DELETE FROM settings;',str);
+//main.cmdSql(1,'drop table settings;',str);
+//main.cmdSql(1,'create table settings (param text,value text);',str);
+//main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageLast","0");',str);
+//main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageMax","99");',str);
+//showmessage('таблица settings пересоздана');
 end;
 
 procedure Tmain.paste0Click(Sender: TObject);
@@ -823,7 +827,7 @@ begin
   status.Panels[1].text:='инициализация данных...';
   initNumberPageMax := 99;    // Число страниц (по умолчанию)
   numberPageCurrent := 1; // Текущая страница
-  currentVersion:='0.3.0.0 Beta';
+  currentVersion:='0.3.0.1 Beta';
 
   status.Panels[0].text:='';
 
@@ -1187,6 +1191,11 @@ end;
 procedure Tmain.goUp9Click(Sender: TObject);
 begin
   goUp(9);
+end;
+
+procedure Tmain.N10Click(Sender: TObject);
+begin
+fTimer.show;
 end;
 
 procedure Tmain.N2Click(Sender: TObject);
