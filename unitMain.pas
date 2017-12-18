@@ -701,13 +701,18 @@ end;
 procedure Tmain.estbutton1Click(Sender: TObject);
 var str:string;
 begin
-showmessage('good');
+showmessage('База будет переведена на версию 0.8');
 //main.cmdSql(1,'DELETE FROM settings;',str);
 //main.cmdSql(1,'drop table settings;',str);
 //main.cmdSql(1,'create table settings (param text,value text);',str);
 //main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageLast","0");',str);
 //main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageMax","99");',str);
 //showmessage('таблица settings пересоздана');
+main.cmdSql(1,'insert INTO settings (param,value) VALUES ("hoursDayWorkComplited","12");',str);
+main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberDayWorkComplited","20");',str);
+main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberDayWorkParts","4");',str);
+main.cmdSql(1,'insert INTO settings (param,value) VALUES ("secTimerUpdate","2");',str);
+showmessage('База переведена на версию 0.8');
 end;
 
 procedure Tmain.paste0Click(Sender: TObject);
@@ -827,7 +832,7 @@ begin
   status.Panels[1].text:='инициализация данных...';
   initNumberPageMax := 99;    // Число страниц (по умолчанию)
   numberPageCurrent := 1; // Текущая страница
-  currentVersion:='0.3.0.1 Beta';
+  currentVersion:='0.8.0';
 
   status.Panels[0].text:='';
 
@@ -864,12 +869,17 @@ begin
     cmdSql(1,'create table settings (param text,value text);',tmp);
     cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageLast","0");',tmp);
     cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageMax","'+inttostr(initNumberPageMax)+'");',tmp);
+    main.cmdSql(1,'insert INTO settings (param,value) VALUES ("hoursDayWorkComplited","12");',str);
+    main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberDayWorkComplited","20");',str);
+    main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberDayWorkParts","4");',str);
+    main.cmdSql(1,'insert INTO settings (param,value) VALUES ("secTimerUpdate","2");',str);
+
 
     for i := 1 to initNumberPageMax do cmdSql(1,'INSERT INTO titles (title) VALUES ("title '+ inttostr(i) +'");',tmp);
 
     for i := 1 to initNumberPageMax*10+10 do cmdSql(1,'INSERT INTO buffers (item,notice) VALUES ("item '+inttostr(i)+'", "notice '+inttostr(i)+'");',tmp);
 
-    cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("g", "0");',tmp);
+    cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("g", "Вечный буфер");',tmp);
   end else begin
 
   end;

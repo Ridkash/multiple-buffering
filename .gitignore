@@ -1,10 +1,12 @@
-App/*.ini
-App/*.db
+*.ini
+*.db
 __history/*
 __recovery/*
 *.stat
 *.local
 *.identcache
 *.dcu
-*.ico
 *.db-journal
+appDebug/MultiBuffer/*
+appDebug/MultiBuffer.exe
+appDebug/base.db

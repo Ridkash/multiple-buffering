@@ -3,9 +3,8 @@ object fTimer: TfTimer
   Top = 0
   VertScrollBar.ParentColor = False
   BorderStyle = bsToolWindow
-  Caption = #1058#1072#1081#1084#1077#1088
-  ClientHeight = 115
-  ClientWidth = 137
+  ClientHeight = 136
+  ClientWidth = 141
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,15 +13,17 @@ object fTimer: TfTimer
   Font.Style = []
   FormStyle = fsStayOnTop
   Menu = MainMenu1
-  OldCreateOrder = False
+  OldCreateOrder = True
+  Visible = True
+  WindowMenu = timerStartButton
   PixelsPerInch = 96
   TextHeight = 13
-  object LabelTime: TLabel
+  object timerH: TLabel
     Left = 8
     Top = 0
-    Width = 126
-    Height = 65
-    Caption = '00:00'
+    Width = 56
+    Height = 69
+    Caption = '00'
     Color = clTeal
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
@@ -32,9 +33,9 @@ object fTimer: TfTimer
     ParentColor = False
     ParentFont = False
   end
-  object LabelCount: TLabel
+  object timerCount: TLabel
     Left = 48
-    Top = 64
+    Top = 66
     Width = 20
     Height = 49
     Caption = '0'
@@ -45,9 +46,53 @@ object fTimer: TfTimer
     Font.Style = []
     ParentFont = False
   end
+  object Label1: TLabel
+    Left = 8
+    Top = 113
+    Width = 71
+    Height = 13
+    Caption = #1059#1078#1077' '#1079#1072#1082#1088#1099#1090#1086':'
+  end
+  object timerAllClose: TLabel
+    Left = 100
+    Top = 113
+    Width = 6
+    Height = 13
+    Caption = '0'
+  end
+  object timerM: TLabel
+    Left = 81
+    Top = 0
+    Width = 56
+    Height = 69
+    Caption = '00'
+    Color = clTeal
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlack
+    Font.Height = -56
+    Font.Name = 'Book Antiqua'
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
+  end
+  object timerBetwin: TLabel
+    Left = 65
+    Top = -7
+    Width = 14
+    Height = 69
+    Caption = ':'
+    Color = clTeal
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlack
+    Font.Height = -56
+    Font.Name = 'Book Antiqua'
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
+  end
   object ButtonL: TButton
     Left = 8
-    Top = 64
+    Top = 66
     Width = 34
     Height = 41
     Cursor = crHandPoint
@@ -56,8 +101,8 @@ object fTimer: TfTimer
     OnClick = ButtonLClick
   end
   object ButtonR: TButton
-    Left = 98
-    Top = 64
+    Left = 100
+    Top = 66
     Width = 34
     Height = 41
     Cursor = crHandPoint
@@ -67,14 +112,21 @@ object fTimer: TfTimer
   end
   object sTimer: TTimer
     Enabled = False
+    Interval = 5000
     OnTimer = sTimerTimer
-    Left = 400
+    Left = 240
     Top = 96
   end
   object MainMenu1: TMainMenu
-    BiDiMode = bdRightToLeft
-    ParentBiDiMode = False
-    Left = 376
-    Top = 24
+    Left = 240
+    Top = 16
+    object timerStopButton: TMenuItem
+      Caption = #1057#1058#1054#1055
+      OnClick = timerStopButtonClick
+    end
+    object timerStartButton: TMenuItem
+      Caption = #1057#1058#1040#1056#1058
+      OnClick = timerStartButtonClick
+    end
   end
 end

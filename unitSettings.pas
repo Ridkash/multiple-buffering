@@ -14,6 +14,16 @@ type
     LabelNumberMaxPage: TLabel;
     LabelBuferG: TLabel;
     EditBuferG: TEdit;
+    gTimer: TGroupBox;
+    timerAllClose: TEdit;
+    mainSettings: TGroupBox;
+    timerLabelClose: TLinkLabel;
+    TimerCorrectionLabel: TLinkLabel;
+    timerCorrectionDay: TEdit;
+    LinkLabel1: TLinkLabel;
+    timerUpdate: TEdit;
+    Label1: TLabel;
+    timerAllHours: TEdit;
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
