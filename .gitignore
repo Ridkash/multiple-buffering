@@ -8,5 +8,6 @@ __recovery/*
 *.dcu
 *.db-journal
 appDebug/MultiBuffer/*
-appDebug/MultiBuffer.exe
-appDebug/base.db
+appDebug/*.exe
+appDebug/*.db
+appDebug/*.dll

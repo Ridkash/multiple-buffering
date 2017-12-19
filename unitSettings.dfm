@@ -113,7 +113,7 @@ object settings: Tsettings
     TabOrder = 3
     object LabelBuferG: TLabel
       Left = 3
-      Top = 75
+      Top = 56
       Width = 172
       Height = 13
       Caption = #1055#1086' '#1085#1072#1078#1072#1090#1080#1102' CTRL + G '#1074#1089#1090#1072#1074#1083#1103#1077#1090':'
@@ -127,7 +127,7 @@ object settings: Tsettings
     end
     object EditBuferG: TEdit
       Left = 248
-      Top = 72
+      Top = 48
       Width = 227
       Height = 21
       TabOrder = 0
@@ -140,6 +140,16 @@ object settings: Tsettings
       Height = 21
       TabOrder = 1
       Text = '99'
+    end
+    object bashCheack: TCheckBox
+      Left = 3
+      Top = 88
+      Width = 206
+      Height = 17
+      BiDiMode = bdRightToLeft
+      Caption = #1057#1082#1088#1099#1074#1072#1090#1100' '#1082#1086#1084#1072#1085#1076#1099' '#1086#1090' BASH - history                            '
+      ParentBiDiMode = False
+      TabOrder = 2
     end
   end
 end

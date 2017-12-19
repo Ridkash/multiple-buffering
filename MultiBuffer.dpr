@@ -21,6 +21,7 @@ begin
   buffer.FormStyle:=fsStayOnTop;
   main.N5.Checked:=true;
   buffer.Show;
+  ftimer.Hide;
 
   Application.Run;
 

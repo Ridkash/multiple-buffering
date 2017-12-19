@@ -3,6 +3,7 @@ object fTimer: TfTimer
   Top = 0
   VertScrollBar.ParentColor = False
   BorderStyle = bsToolWindow
+  Caption = #1058#1072#1081#1084#1080#1085#1075
   ClientHeight = 136
   ClientWidth = 141
   Color = clBtnFace

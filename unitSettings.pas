@@ -24,6 +24,7 @@ type
     timerUpdate: TEdit;
     Label1: TLabel;
     timerAllHours: TEdit;
+    bashCheack: TCheckBox;
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -56,13 +57,32 @@ procedure Tsettings.ButtonSaveClick(Sender: TObject);
 var tmp :string;
 pageMax:word;
 begin
-    main.status.Panels.Items[1].Text:='íàñòðîéêè ñîõðàíåíû';
-    settings.Hide;
     main.cmdSql(1,'update shortcuts SET cmd="'+main.trimInSql(settings.EditBuferG.Text)+'" where shortcut="g"',tmp);
     pageMax:=strtoint(settings.EditNumberMaxPage.Text);
     main.cmdSql(1,'update settings SET value='+inttostr(pageMax)+' where param="numberPageMax"',tmp);
     settings.numberPageMax:= pageMax;
-    main.pageInitSQL(pageMax);
+    main.pageInitSQL(main.numberPageCurrent);
+
+
+    main.cmdSql(1,'update settings SET value='+trim(settings.timerAllHours.Text)+' where param="hoursDayWorkComplited"',tmp);
+    main.cmdSql(1,'update settings SET value='+trim(settings.timerAllClose.Text)+' where param="numberDayWorkComplited"',tmp);
+    main.cmdSql(1,'update settings SET value='+trim(settings.timerCorrectionDay.Text)+' where param="numberDayWorkParts"',tmp);
+    main.cmdSql(1,'update settings SET value='+trim(settings.timerUpdate.Text)+' where param="secTimerUpdate"',tmp);
+
+  // bash cheack çàïèñûâàþ
+    if settings.bashCheack.Checked then begin
+      main.bashSpace:=' ';
+      main.cmdSql(1,'update settings SET value="1" where param="BashCheack"',tmp);
+
+    end else begin
+       main.bashSpace:='';
+       main.cmdSql(1,'update settings SET value="0" where param="BashCheack"',tmp);
+    end;
+
+
+
+    main.status.Panels.Items[1].Text:='íàñòðîéêè ñîõðàíåíû';
+    settings.Hide;
 end;
 
 procedure Tsettings.FormCreate(Sender: TObject);
@@ -74,6 +94,32 @@ begin
 
   main.cmdSql(0,'select s.value FROM settings s WHERE param="numberPageLast";',res);
   settings.numberPageÑurrent:=strtoint(res);
+
+  main.cmdSql(0,'select s.value FROM settings s WHERE param="hoursDayWorkComplited";',res);
+  settings.timerAllHours.Text:=res;
+
+  main.cmdSql(0,'select s.value FROM settings s WHERE param="numberDayWorkComplited";',res);
+  settings.timerAllClose.Text:=res;
+
+  main.cmdSql(0,'select s.value FROM settings s WHERE param="numberDayWorkParts";',res);
+  settings.timerCorrectionDay.Text:=res;
+
+  main.cmdSql(0,'select s.value FROM settings s WHERE param="secTimerUpdate";',res);
+  settings.timerUpdate.Text:=res;
+
+  main.cmdSql(0,'select s.value FROM settings s WHERE param="BashCheack";',res);
+
+  if strtoint(res)=1 then begin
+    settings.bashCheack.Checked:=true;
+    main.bashSpace:=' ';
+  end else begin
+   settings.bashCheack.Checked:=false;
+       main.bashSpace:='';
+  end;
+
+
+
+
   main.pageInitSQL(settings.numberPageÑurrent);
 end;
 

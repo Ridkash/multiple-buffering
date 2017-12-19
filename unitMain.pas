@@ -138,6 +138,7 @@ type
     procedure estbutton1Click(Sender: TObject);
     procedure titleItemsChange(Sender: TObject);
     procedure N10Click(Sender: TObject);
+    procedure N0811Click(Sender: TObject);
 
 
   private
@@ -153,17 +154,21 @@ type
     { Public declarations }
 //    numberPageMax:word;      // число страниц копипаста по умолчанию 99 страниц переменная равна 99;
     bufferG:string;
+    bashSpace : string;
+    tmp: string;
+    numberPageCurrent:word;  // Текущая страница
     procedure cmdSql( cmd :word; sql:string; var res:string);
     procedure pageInitSQL(needPageNumber:word);
     function trimInSql(str:string): string;
     function trimoutSql(str:string): string;
+
 
   end;
 
 var
   main: Tmain;
 
-  numberPageCurrent:word;  // Текущая страница
+
   ini: TIniFile;           //ини файл настроек
   str_end: string;         // маркер конца строки
   sql_znak_in,
@@ -171,8 +176,9 @@ var
   currentVersion: string;  // текущая версия приложения
   modUse: integer;         // ctrl,alt
   bufferG: string;         // окно произвольного буфера
-  queryStr: string;
+
   tmpMass : Array [0..50] of string;
+
 implementation
 
 {$R *.dfm}
@@ -349,17 +355,13 @@ begin
       //item 10..
       // needPageNumber - страница на которую нужно переходить
 
-      //проверяю на корректность данные
-//      if (needPageNumber<1) then needPageNumber:=1;
-//       inc(needPageNumber)
-
       //Формирую title
       //main.titleItems.Items Начинается запись с нуля, тут четко все!
       for i := 1 to settings.numberPageMax do begin
         main.cmdSql(0,'select t.title from titles t where t.rowid='+inttostr(i)+';',str);
         main.titleItems.Items[i-1]:=str;
       end;
-      // Сразу пропишу на форму номер страницы
+      // пропишу на форму номер страницы
       main.pageNumber.Caption := inttostr(needPageNumber);
 
       bufferCount:=strtoint(main.pageNumber.Caption) * 10;
@@ -615,7 +617,12 @@ end;
 procedure Tmain.copy0Click(Sender: TObject);
 begin
   TClipboard.Create; //Создали объект
+
+
+  tmp:=item0.Lines.Text;
+  item0.Lines.Text:=main.bashSpace+item0.Lines.Text;
   ClipBoard.SetTextBuf(item0.Lines.GetText);//Скопировали в буфер обмена текст
+  item0.Lines.Text:=tmp;
   buffer.Caption := note0.Lines.GetText;
   buffer.tablo.Caption:=item0.Lines.GetText;
   buffer.StatusBar1.Panels[0].Text := 'page: '+pageNumber.Caption;
@@ -623,7 +630,11 @@ end;
 procedure Tmain.copy1Click(Sender: TObject);
 begin
   TClipboard.Create; //Создали объект
+  tmp:=item1.Lines.Text;
+  item1.Lines.Text:=main.bashSpace+item1.Lines.Text;
+
   ClipBoard.SetTextBuf(item1.Lines.GetText);//Скопировали в буфер обмена текст
+  item1.Lines.Text:=tmp;
   buffer.Caption := note1.Lines.GetText;
   buffer.tablo.Caption:=item1.Lines.GetText;
   buffer.StatusBar1.Panels[0].Text := 'page: '+pageNumber.Caption;
@@ -633,7 +644,11 @@ end;
 procedure Tmain.copy2Click(Sender: TObject);
 begin
   TClipboard.Create; //Создали объект
+  tmp:=item2.Lines.Text;
+  item2.Lines.Text:=main.bashSpace+item2.Lines.Text;
+
   ClipBoard.SetTextBuf(item2.Lines.GetText);//Скопировали в буфер обмена текст
+  item2.Lines.Text:=tmp;
   buffer.Caption := note2.Lines.GetText;
   buffer.tablo.Caption:=item2.Lines.GetText;
   buffer.StatusBar1.Panels[0].Text := 'page: '+pageNumber.Caption;
@@ -641,7 +656,11 @@ end;
 procedure Tmain.copy3Click(Sender: TObject);
 begin
   TClipboard.Create; //Создали объект
+  tmp:=item3.Lines.Text;
+  item3.Lines.Text:=main.bashSpace+item3.Lines.Text;
+
   ClipBoard.SetTextBuf(item3.Lines.GetText);//Скопировали в буфер обмена текст
+  item3.Lines.Text:=tmp;
   buffer.Caption := note3.Lines.GetText;
   buffer.tablo.Caption:=item3.Lines.GetText;
   buffer.StatusBar1.Panels[0].Text := 'page: '+pageNumber.Caption;
@@ -649,7 +668,11 @@ end;
 procedure Tmain.copy4Click(Sender: TObject);
 begin
   TClipboard.Create; //Создали объект
+  tmp:=item4.Lines.Text;
+  item4.Lines.Text:=main.bashSpace+item4.Lines.Text;
+
   ClipBoard.SetTextBuf(item4.Lines.GetText);//Скопировали в буфер обмена текст
+  item4.Lines.Text:=tmp;
   buffer.Caption := note4.Lines.GetText;
   buffer.tablo.Caption:=item4.Lines.GetText;
   buffer.StatusBar1.Panels[0].Text := 'page: '+pageNumber.Caption;
@@ -657,7 +680,11 @@ end;
 procedure Tmain.copy5Click(Sender: TObject);
 begin
   TClipboard.Create; //Создали объект
+  tmp:=item5.Lines.Text;
+  item5.Lines.Text:=main.bashSpace+item5.Lines.Text;
+
   ClipBoard.SetTextBuf(item5.Lines.GetText);//Скопировали в буфер обмена текст
+  item5.Lines.Text:=tmp;
   buffer.Caption := note5.Lines.GetText;
   buffer.tablo.Caption:=item5.Lines.GetText;
   buffer.StatusBar1.Panels[0].Text := 'page: '+pageNumber.Caption;
@@ -666,7 +693,11 @@ end;
 procedure Tmain.copy6Click(Sender: TObject);
 begin
   TClipboard.Create; //Создали объект
+  tmp:=item6.Lines.Text;
+  item6.Lines.Text:=main.bashSpace+item6.Lines.Text;
+
   ClipBoard.SetTextBuf(item6.Lines.GetText);//Скопировали в буфер обмена текст
+  item6.Lines.Text:=tmp;
   buffer.Caption := note6.Lines.GetText;
   buffer.tablo.Caption:=item6.Lines.GetText;
   buffer.StatusBar1.Panels[0].Text := 'page: '+pageNumber.Caption;
@@ -675,7 +706,11 @@ end;
 procedure Tmain.copy7Click(Sender: TObject);
 begin
   TClipboard.Create; //Создали объект
+  tmp:=item7.Lines.Text;
+  item7.Lines.Text:=main.bashSpace+item7.Lines.Text;
+
   ClipBoard.SetTextBuf(item7.Lines.GetText);//Скопировали в буфер обмена текст
+  item7.Lines.Text:=tmp;
   buffer.Caption := note7.Lines.GetText;
   buffer.tablo.Caption:=item7.Lines.GetText;
   buffer.StatusBar1.Panels[0].Text := 'page: '+pageNumber.Caption;
@@ -684,7 +719,11 @@ end;
 procedure Tmain.copy8Click(Sender: TObject);
 begin
   TClipboard.Create; //Создали объект
+  tmp:=item8.Lines.Text;
+  item8.Lines.Text:=main.bashSpace+item8.Lines.Text;
+
   ClipBoard.SetTextBuf(item8.Lines.GetText);//Скопировали в буфер обмена текст
+  item8.Lines.Text:=tmp;
   buffer.Caption := note8.Lines.GetText;
   buffer.tablo.Caption:=item8.Lines.GetText;
   buffer.StatusBar1.Panels[0].Text := 'page: '+pageNumber.Caption;
@@ -692,7 +731,11 @@ end;
 procedure Tmain.copy9Click(Sender: TObject);
 begin
   TClipboard.Create; //Создали объект
+  tmp:=item9.Lines.Text;
+  item9.Lines.Text:=main.bashSpace+item9.Lines.Text;
+
   ClipBoard.SetTextBuf(item9.Lines.GetText);//Скопировали в буфер обмена текст
+  item9.Lines.Text:=tmp;
   buffer.Caption := note9.Lines.GetText;
   buffer.tablo.Caption:=item9.Lines.GetText;
   buffer.StatusBar1.Panels[0].Text := 'page: '+pageNumber.Caption;
@@ -701,18 +744,19 @@ end;
 procedure Tmain.estbutton1Click(Sender: TObject);
 var str:string;
 begin
-showmessage('База будет переведена на версию 0.8');
-//main.cmdSql(1,'DELETE FROM settings;',str);
-//main.cmdSql(1,'drop table settings;',str);
-//main.cmdSql(1,'create table settings (param text,value text);',str);
-//main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageLast","0");',str);
-//main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageMax","99");',str);
-//showmessage('таблица settings пересоздана');
+
+main.cmdSql(1,'DELETE FROM settings;',str);
+main.cmdSql(1,'drop table settings;',str);
+main.cmdSql(1,'create table settings (param text,value text);',str);
+main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageLast","1");',str);
+main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageMax","99");',str);
 main.cmdSql(1,'insert INTO settings (param,value) VALUES ("hoursDayWorkComplited","12");',str);
 main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberDayWorkComplited","20");',str);
 main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberDayWorkParts","4");',str);
 main.cmdSql(1,'insert INTO settings (param,value) VALUES ("secTimerUpdate","2");',str);
-showmessage('База переведена на версию 0.8');
+main.cmdSql(1,'insert INTO settings (param,value) VALUES ("BashCheack","0");',tmp);
+
+showmessage('Успешно сброшена!');
 end;
 
 procedure Tmain.paste0Click(Sender: TObject);
@@ -765,6 +809,7 @@ begin
   pageInitSql(strtoint(main.pageNumber.Caption));
   buffer.StatusBar1.Panels[1].Text:=main.titleItems.Text;
   buffer.StatusBar1.Panels[0].Text:='page: '+main.pageNumber.Caption;
+  main.numberPageCurrent:=strtoint(main.pageNumber.Caption);
 
 //  showmessage('->'+pageNumber.Caption+'mod'+inttostr(strtoint(pageNumber.Caption) div 10));
 end;
@@ -775,6 +820,7 @@ if (strtoint(pageNumber.Caption)=1) then pageNumber.Caption := inttostr(settings
   pageInitSql(strtoint(main.pageNumber.Caption));
   buffer.StatusBar1.Panels[1].Text:=main.titleItems.Text;
   buffer.StatusBar1.Panels[0].Text:='page: '+main.pageNumber.Caption;
+  main.numberPageCurrent:=strtoint(main.pageNumber.Caption);
 
 end;
 
@@ -815,7 +861,7 @@ const
  // Спец символы
 //   qQq   = #39; // '
 
- 
+
 var
 //sqlite
 
@@ -832,7 +878,7 @@ begin
   status.Panels[1].text:='инициализация данных...';
   initNumberPageMax := 99;    // Число страниц (по умолчанию)
   numberPageCurrent := 1; // Текущая страница
-  currentVersion:='0.8.0';
+  currentVersion:='0.8.1';
 
   status.Panels[0].text:='';
 
@@ -867,16 +913,16 @@ begin
     cmdSql(1,'create table titles (title text);',tmp);
     cmdSql(1,'create table shortcuts (shortcut text,cmd text);',tmp);
     cmdSql(1,'create table settings (param text,value text);',tmp);
-    cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageLast","0");',tmp);
+    cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageLast","'+inttostr(numberPageCurrent)+'");',tmp);
     cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageMax","'+inttostr(initNumberPageMax)+'");',tmp);
-    main.cmdSql(1,'insert INTO settings (param,value) VALUES ("hoursDayWorkComplited","12");',str);
-    main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberDayWorkComplited","20");',str);
-    main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberDayWorkParts","4");',str);
-    main.cmdSql(1,'insert INTO settings (param,value) VALUES ("secTimerUpdate","2");',str);
+    cmdSql(1,'insert INTO settings (param,value) VALUES ("hoursDayWorkComplited","12");',tmp);
+    cmdSql(1,'insert INTO settings (param,value) VALUES ("numberDayWorkComplited","20");',tmp);
+    cmdSql(1,'insert INTO settings (param,value) VALUES ("numberDayWorkParts","4");',tmp);
+    cmdSql(1,'insert INTO settings (param,value) VALUES ("secTimerUpdate","2");',tmp);
+    cmdSql(1,'insert INTO settings (param,value) VALUES ("BashCheack","0");',tmp);
 
 
     for i := 1 to initNumberPageMax do cmdSql(1,'INSERT INTO titles (title) VALUES ("title '+ inttostr(i) +'");',tmp);
-
     for i := 1 to initNumberPageMax*10+10 do cmdSql(1,'INSERT INTO buffers (item,notice) VALUES ("item '+inttostr(i)+'", "notice '+inttostr(i)+'");',tmp);
 
     cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("g", "Вечный буфер");',tmp);
@@ -1201,6 +1247,12 @@ end;
 procedure Tmain.goUp9Click(Sender: TObject);
 begin
   goUp(9);
+end;
+
+procedure Tmain.N0811Click(Sender: TObject);
+begin
+  showmessage('Базу дотяну с 0.8.0 до 0.8.1');
+  cmdSql(1,'insert INTO settings (param,value) VALUES ("BashCheack","1");',tmp);
 end;
 
 procedure Tmain.N10Click(Sender: TObject);
