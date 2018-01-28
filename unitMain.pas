@@ -614,7 +614,7 @@ begin
 
   if Msg.HotKey = id_C_l then begin
 
-    bodyText:= main.trimoutSql(main.bufferG);
+    bodyText:= settings.EditBuferL.Text;
 
     ClipBoard.SetTextBuf(  PChar(bodyText));
 
@@ -627,7 +627,7 @@ begin
   end;
   if Msg.HotKey = id_C_p then begin
 
-    bodyText:= main.trimoutSql(main.bufferG);
+    bodyText:= settings.EditBuferP.Text;
 
     ClipBoard.SetTextBuf(  PChar(bodyText));
 
@@ -639,7 +639,16 @@ begin
 
   end;
   if Msg.HotKey = id_C_m then begin
-    showmessage('OK3');
+    bodyText:= settings.EditBuferM.Text;
+
+    ClipBoard.SetTextBuf(  PChar(bodyText));
+
+    buffer.tablo.Caption := currentTime + bodyText;
+    buffer.Caption := 'Содержит:';
+
+    keybd_event(Ord('V'),0,0,0);
+    keybd_event(Ord('V'),0,KEYEVENTF_KEYUP,0);
+
   end;
 
 
@@ -917,7 +926,7 @@ begin
   status.Panels[1].text:='инициализация данных...';
   initNumberPageMax := 99;    // Число страниц (по умолчанию)
   numberPageCurrent := 1; // Текущая страница
-  currentVersion:='0.8.2';
+  currentVersion:='0.8.3';
 
   status.Panels[0].text:='';
 
