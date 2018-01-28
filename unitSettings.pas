@@ -25,6 +25,12 @@ type
     Label1: TLabel;
     timerAllHours: TEdit;
     bashCheack: TCheckBox;
+    LabelBuferL: TLabel;
+    LabelBuferP: TLabel;
+    EditBuferL: TEdit;
+    EditBuferP: TEdit;
+    EditBuferM: TEdit;
+    LabelBuferM: TLabel;
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -58,6 +64,11 @@ var tmp :string;
 pageMax:word;
 begin
     main.cmdSql(1,'update shortcuts SET cmd="'+main.trimInSql(settings.EditBuferG.Text)+'" where shortcut="g"',tmp);
+
+    main.cmdSql(1,'update shortcuts SET cmd="'+main.trimInSql(settings.EditBuferL.Text)+'" where shortcut="l"',tmp);
+    main.cmdSql(1,'update shortcuts SET cmd="'+main.trimInSql(settings.EditBuferP.Text)+'" where shortcut="p"',tmp);
+    main.cmdSql(1,'update shortcuts SET cmd="'+main.trimInSql(settings.EditBuferM.Text)+'" where shortcut="m"',tmp);
+
     pageMax:=strtoint(settings.EditNumberMaxPage.Text);
     main.cmdSql(1,'update settings SET value='+inttostr(pageMax)+' where param="numberPageMax"',tmp);
     settings.numberPageMax:= pageMax;
@@ -89,6 +100,7 @@ procedure Tsettings.FormCreate(Sender: TObject);
 var
   res:string;
 begin
+
   main.cmdSql(0,'select s.value FROM settings s WHERE param="numberPageMax";',res);
   settings.numberPageMax:=strtoint(res);
 
@@ -106,6 +118,15 @@ begin
 
   main.cmdSql(0,'select s.value FROM settings s WHERE param="secTimerUpdate";',res);
   settings.timerUpdate.Text:=res;
+
+  main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="g"',res);
+  settings.EditBuferG.Text:=trim(res);
+  main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="l"',res);
+  settings.EditBuferL.Text:=trim(res);
+  main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="p"',res);
+  settings.EditBuferP.Text:=trim(res);
+  main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="m"',res);
+  settings.EditBuferM.Text:=trim(res);
 
   main.cmdSql(0,'select s.value FROM settings s WHERE param="BashCheack";',res);
 

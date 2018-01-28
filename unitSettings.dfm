@@ -2,8 +2,8 @@ object settings: Tsettings
   Left = 0
   Top = 0
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
-  ClientHeight = 385
-  ClientWidth = 508
+  ClientHeight = 229
+  ClientWidth = 673
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,8 +15,8 @@ object settings: Tsettings
   PixelsPerInch = 96
   TextHeight = 13
   object ButtonCancel: TButton
-    Left = 430
-    Top = 336
+    Left = 582
+    Top = 176
     Width = 75
     Height = 25
     Caption = #1086#1090#1084#1077#1085#1072
@@ -24,8 +24,8 @@ object settings: Tsettings
     OnClick = ButtonCancelClick
   end
   object ButtonSave: TButton
-    Left = 349
-    Top = 336
+    Left = 481
+    Top = 176
     Width = 75
     Height = 25
     Caption = #1089#1086#1093#1088#1072#1085#1080#1090#1100
@@ -33,10 +33,10 @@ object settings: Tsettings
     OnClick = ButtonSaveClick
   end
   object gTimer: TGroupBox
-    Left = 8
-    Top = 140
-    Width = 497
-    Height = 169
+    Left = 407
+    Top = 8
+    Width = 250
+    Height = 126
     Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1090#1072#1081#1084#1077#1088#1072
     TabOrder = 2
     object Label1: TLabel
@@ -55,7 +55,7 @@ object settings: Tsettings
       Text = '20'
     end
     object timerLabelClose: TLinkLabel
-      Left = 4
+      Left = 3
       Top = 46
       Width = 122
       Height = 17
@@ -107,13 +107,13 @@ object settings: Tsettings
   object mainSettings: TGroupBox
     Left = 8
     Top = 8
-    Width = 497
-    Height = 126
+    Width = 385
+    Height = 145
     Caption = #1054#1073#1097#1080#1077' '#1085#1072#1089#1090#1088#1086#1081#1082#1080
     TabOrder = 3
     object LabelBuferG: TLabel
       Left = 3
-      Top = 56
+      Top = 53
       Width = 172
       Height = 13
       Caption = #1055#1086' '#1085#1072#1078#1072#1090#1080#1102' CTRL + G '#1074#1089#1090#1072#1074#1083#1103#1077#1090':'
@@ -125,31 +125,77 @@ object settings: Tsettings
       Height = 13
       Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1089#1090#1088#1072#1085#1080#1094
     end
+    object LabelBuferL: TLabel
+      Left = 3
+      Top = 73
+      Width = 170
+      Height = 13
+      Caption = #1055#1086' '#1085#1072#1078#1072#1090#1080#1102' CTRL + L '#1074#1089#1090#1072#1074#1083#1103#1077#1090':'
+    end
+    object LabelBuferP: TLabel
+      Left = 3
+      Top = 93
+      Width = 171
+      Height = 13
+      Caption = #1055#1086' '#1085#1072#1078#1072#1090#1080#1102' CTRL + P '#1074#1089#1090#1072#1074#1083#1103#1077#1090':'
+    end
+    object LabelBuferM: TLabel
+      Left = 3
+      Top = 113
+      Width = 173
+      Height = 13
+      Caption = #1055#1086' '#1085#1072#1078#1072#1090#1080#1102' CTRL + M '#1074#1089#1090#1072#1074#1083#1103#1077#1090':'
+    end
     object EditBuferG: TEdit
-      Left = 248
-      Top = 48
-      Width = 227
-      Height = 21
+      Left = 181
+      Top = 50
+      Width = 188
+      Height = 20
       TabOrder = 0
       Text = #1058#1091#1090' '#1089#1086#1076#1077#1088#1078#1080#1090#1089#1103' '#1074#1089#1077#1075#1076#1072' '#1086#1076#1080#1085' '#1073#1091#1092#1077#1088
     end
     object EditNumberMaxPage: TEdit
-      Left = 432
-      Top = 21
+      Left = 216
+      Top = 16
       Width = 43
       Height = 21
       TabOrder = 1
       Text = '99'
     end
     object bashCheack: TCheckBox
-      Left = 3
-      Top = 88
+      Left = 0
+      Top = 264
       Width = 206
       Height = 17
       BiDiMode = bdRightToLeft
       Caption = #1057#1082#1088#1099#1074#1072#1090#1100' '#1082#1086#1084#1072#1085#1076#1099' '#1086#1090' BASH - history                            '
       ParentBiDiMode = False
       TabOrder = 2
+      Visible = False
+    end
+    object EditBuferL: TEdit
+      Left = 181
+      Top = 70
+      Width = 188
+      Height = 20
+      TabOrder = 3
+      Text = #1058#1091#1090' '#1089#1086#1076#1077#1088#1078#1080#1090#1089#1103' '#1074#1089#1077#1075#1076#1072' '#1086#1076#1080#1085' '#1073#1091#1092#1077#1088
+    end
+    object EditBuferP: TEdit
+      Left = 181
+      Top = 90
+      Width = 188
+      Height = 20
+      TabOrder = 4
+      Text = #1058#1091#1090' '#1089#1086#1076#1077#1088#1078#1080#1090#1089#1103' '#1074#1089#1077#1075#1076#1072' '#1086#1076#1080#1085' '#1073#1091#1092#1077#1088
+    end
+    object EditBuferM: TEdit
+      Left = 181
+      Top = 110
+      Width = 188
+      Height = 20
+      TabOrder = 5
+      Text = #1058#1091#1090' '#1089#1086#1076#1077#1088#1078#1080#1090#1089#1103' '#1074#1089#1077#1075#1076#1072' '#1086#1076#1080#1085' '#1073#1091#1092#1077#1088
     end
   end
 end

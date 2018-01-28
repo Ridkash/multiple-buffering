@@ -87,6 +87,7 @@ type
     BufferConnection: TSQLConnection;
     estbutton1: TMenuItem;
     N10: TMenuItem;
+    N11: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure N3Click(Sender: TObject);
 
@@ -139,12 +140,13 @@ type
     procedure titleItemsChange(Sender: TObject);
     procedure N10Click(Sender: TObject);
     procedure N0811Click(Sender: TObject);
+    procedure N11Click(Sender: TObject);
 
 
   private
     { Private declarations }
     id1, id2, id3, id4: Integer;
-    id_C_1, id_C_2, id_C_3, id_C_4, id_C_5,id_C_6, id_C_7, id_C_8, id_C_9, id_C_0, id_C_T, id_C_SB, id_C_G, id_C_S: Integer;
+    id_C_1, id_C_2, id_C_3, id_C_4, id_C_5,id_C_6, id_C_7, id_C_8, id_C_9, id_C_0, id_C_T, id_C_SB, id_C_G, id_C_S,id_C_l, id_C_p, id_C_m: Integer;
     id_A_1, id_A_2, id_A_3, id_A_4, id_A_5,id_A_6, id_A_7, id_A_8, id_A_9, id_A_0, id_A_T: Integer;
     id_following,id_previous:integer;
 
@@ -586,7 +588,7 @@ begin
   end;
 
   if Msg.HotKey = id_C_G then begin
-    currentTime:= FormatDateTime('hh:mm, dd.MM.YYYY',Now);
+//    currentTime:= FormatDateTime('hh:mm, dd.MM.YYYY',Now);
     bodyText:= main.trimoutSql(main.bufferG);
 
 //    bodyText := 'информация об ОО: '+#13#10#9
@@ -608,6 +610,38 @@ begin
   end;
 
   if Msg.HotKey = id_C_SB then main.N7.Click;
+
+
+  if Msg.HotKey = id_C_l then begin
+
+    bodyText:= main.trimoutSql(main.bufferG);
+
+    ClipBoard.SetTextBuf(  PChar(bodyText));
+
+    buffer.tablo.Caption := currentTime + bodyText;
+    buffer.Caption := 'Содержит:';
+
+    keybd_event(Ord('V'),0,0,0);
+    keybd_event(Ord('V'),0,KEYEVENTF_KEYUP,0);
+
+  end;
+  if Msg.HotKey = id_C_p then begin
+
+    bodyText:= main.trimoutSql(main.bufferG);
+
+    ClipBoard.SetTextBuf(  PChar(bodyText));
+
+    buffer.tablo.Caption := currentTime + bodyText;
+    buffer.Caption := 'Содержит:';
+
+    keybd_event(Ord('V'),0,0,0);
+    keybd_event(Ord('V'),0,KEYEVENTF_KEYUP,0);
+
+  end;
+  if Msg.HotKey = id_C_m then begin
+    showmessage('OK3');
+  end;
+
 
 
 
@@ -855,6 +889,11 @@ const
   VK_SB = $6A;
   VK_G = $47;
   VK_S = $6F;
+  VK_L = $4C;
+  VK_P = $50;
+  VK_M = $4D;
+
+
 
   VK_previous = $51;
   VK_following = $45;
@@ -878,7 +917,7 @@ begin
   status.Panels[1].text:='инициализация данных...';
   initNumberPageMax := 99;    // Число страниц (по умолчанию)
   numberPageCurrent := 1; // Текущая страница
-  currentVersion:='0.8.1';
+  currentVersion:='0.8.2';
 
   status.Panels[0].text:='';
 
@@ -925,7 +964,12 @@ begin
     for i := 1 to initNumberPageMax do cmdSql(1,'INSERT INTO titles (title) VALUES ("title '+ inttostr(i) +'");',tmp);
     for i := 1 to initNumberPageMax*10+10 do cmdSql(1,'INSERT INTO buffers (item,notice) VALUES ("item '+inttostr(i)+'", "notice '+inttostr(i)+'");',tmp);
 
-    cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("g", "Вечный буфер");',tmp);
+    cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("g", "буфер G");',tmp);
+
+    cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("l", "буфер L");',tmp);
+    cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("p", "буфер P");',tmp);
+    cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("m", "буфер M");',tmp);
+
   end else begin
 
   end;
@@ -952,8 +996,15 @@ begin
 
   id_C_SB := GlobalAddAtom('Hotkey_C_SB'); RegisterHotKey(Handle, id_C_SB, modUse, VK_SB);
 
+  id_C_l := GlobalAddAtom('Hotkey_C_l'); RegisterHotKey(Handle, id_C_l, modUse, VK_l);
+  id_C_p := GlobalAddAtom('Hotkey_C_p'); RegisterHotKey(Handle, id_C_p, modUse, VK_p);
+  id_C_m := GlobalAddAtom('Hotkey_C_m'); RegisterHotKey(Handle, id_C_m, modUse, VK_m);
+
+
+
   id_following := GlobalAddAtom('Hotkey_following'); RegisterHotKey(Handle, id_following, modUse, VK_following);
   id_previous := GlobalAddAtom('Hotkey_C_previous'); RegisterHotKey(Handle, id_previous, modUse, VK_previous);
+
 //
  status.Panels[1].Text:='';
 
@@ -983,6 +1034,11 @@ begin
   UnRegisterHotkey(Handle, id_C_G); GlobalDeleteAtom(id_C_G);
 
   UnRegisterHotkey(Handle, id_C_SB); GlobalDeleteAtom(id_C_SB);
+
+  UnRegisterHotkey(Handle, id_C_l); GlobalDeleteAtom(id_C_l);
+  UnRegisterHotkey(Handle, id_C_p); GlobalDeleteAtom(id_C_p);
+  UnRegisterHotkey(Handle, id_C_m); GlobalDeleteAtom(id_C_m);
+
 
   UnRegisterHotkey(Handle, id_following); GlobalDeleteAtom(id_following);
   UnRegisterHotkey(Handle, id_previous); GlobalDeleteAtom(id_previous);
@@ -1258,6 +1314,20 @@ end;
 procedure Tmain.N10Click(Sender: TObject);
 begin
 fTimer.show;
+end;
+
+procedure Tmain.N11Click(Sender: TObject);
+begin
+
+main.cmdSql(1,'DELETE FROM shortcuts;',tmp);
+main.cmdSql(1,'drop table shortcuts;',tmp);
+cmdSql(1,'create table shortcuts (shortcut text,cmd text);',tmp);
+cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("g", "буфер G");',tmp);
+cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("l", "буфер L");',tmp);
+cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("p", "буфер P");',tmp);
+cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("m", "буфер M");',tmp);
+
+showmessage('Успешно сброшена!');
 end;
 
 procedure Tmain.N2Click(Sender: TObject);

@@ -2,8 +2,8 @@ object main: Tmain
   Left = 0
   Top = 0
   Caption = 'Multi buffer ver.'
-  ClientHeight = 537
-  ClientWidth = 307
+  ClientHeight = 513
+  ClientWidth = 640
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clBlue
@@ -5988,8 +5988,8 @@ object main: Tmain
   end
   object status: TStatusBar
     Left = 0
-    Top = 518
-    Width = 307
+    Top = 494
+    Width = 640
     Height = 19
     Panels = <
       item
@@ -6022,8 +6022,8 @@ object main: Tmain
       item
         Width = 50
       end>
-    ExplicitTop = 474
-    ExplicitWidth = 302
+    ExplicitTop = 478
+    ExplicitWidth = 307
   end
   object changeTitle: TBitBtn
     Left = 275
@@ -6452,6 +6452,10 @@ object main: Tmain
       object estbutton1: TMenuItem
         Caption = #1057#1073#1088#1086#1089#1080#1090#1100' '#1090#1072#1073#1083#1080#1094#1091' '#1085#1072#1089#1090#1088#1086#1077#1082
         OnClick = estbutton1Click
+      end
+      object N11: TMenuItem
+        Caption = #1057#1073#1088#1086#1089#1080#1090#1100' '#1075#1086#1088#1103#1095#1080#1077' '#1082#1085#1086#1087#1082#1080
+        OnClick = N11Click
       end
     end
     object buffer1: TMenuItem
