@@ -2,7 +2,7 @@ object main: Tmain
   Left = 0
   Top = 0
   Caption = 'Multi buffer ver.'
-  ClientHeight = 530
+  ClientHeight = 510
   ClientWidth = 301
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -5988,7 +5988,7 @@ object main: Tmain
   end
   object status: TStatusBar
     Left = 0
-    Top = 511
+    Top = 491
     Width = 301
     Height = 19
     Panels = <
@@ -6022,8 +6022,6 @@ object main: Tmain
       item
         Width = 50
       end>
-    ExplicitTop = 478
-    ExplicitWidth = 307
   end
   object changeTitle: TBitBtn
     Left = 275

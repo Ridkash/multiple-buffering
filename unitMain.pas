@@ -899,6 +899,7 @@ const
   VK_G = $47;
   VK_S = $6F;
   VK_L = $4C;
+  VK_K = $4B;
   VK_P = $50;
   VK_M = $4D;
 
@@ -975,7 +976,7 @@ begin
 
     cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("g", "αστεπ G");',tmp);
 
-    cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("l", "αστεπ L");',tmp);
+    cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("l", "αστεπ K");',tmp);
     cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("p", "αστεπ P");',tmp);
     cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("m", "αστεπ M");',tmp);
 
@@ -1005,7 +1006,7 @@ begin
 
   id_C_SB := GlobalAddAtom('Hotkey_C_SB'); RegisterHotKey(Handle, id_C_SB, modUse, VK_SB);
 
-  id_C_l := GlobalAddAtom('Hotkey_C_l'); RegisterHotKey(Handle, id_C_l, modUse, VK_l);
+  id_C_l := GlobalAddAtom('Hotkey_C_l'); RegisterHotKey(Handle, id_C_l, modUse, VK_k);
   id_C_p := GlobalAddAtom('Hotkey_C_p'); RegisterHotKey(Handle, id_C_p, modUse, VK_p);
   id_C_m := GlobalAddAtom('Hotkey_C_m'); RegisterHotKey(Handle, id_C_m, modUse, VK_m);
 
@@ -1332,7 +1333,7 @@ main.cmdSql(1,'DELETE FROM shortcuts;',tmp);
 main.cmdSql(1,'drop table shortcuts;',tmp);
 cmdSql(1,'create table shortcuts (shortcut text,cmd text);',tmp);
 cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("g", "αστεπ G");',tmp);
-cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("l", "αστεπ L");',tmp);
+cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("l", "αστεπ K");',tmp);
 cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("p", "αστεπ P");',tmp);
 cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("m", "αστεπ M");',tmp);
 
