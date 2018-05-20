@@ -53,8 +53,8 @@ implementation
 
 procedure TfTimer.timerUpdater(inStr: string);
   var today: TDateTime;
-    parseTimeH,parseTimeM,parseTimeS:word;
-    outStr,str:string;
+    parseTimeH,parseTimeM:word;
+    str:string;
 begin
 today:=Time;
 str:=timetostr(today);
@@ -140,8 +140,9 @@ ftimer.timerCount.Caption:=inttostr(strtoint(ftimer.timerCount.Caption)+1)
 end;
 
 procedure TfTimer.timerStartButtonClick(Sender: TObject);
-var today:Tdatetime;
-  str,t:string;
+//var
+//today:Tdatetime;
+//  str,t:string;
 begin
 // инициализация таймера
 ftimer.sTimer.Interval:=strtoint(settings.timerUpdate.Text)*1000; // Задаю интервал обновления исходя из настроек settings

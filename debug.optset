@@ -1,0 +1,23 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
+        <AppEnableHighDPI>true</AppEnableHighDPI>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_MajorVer>0</VerInfo_MajorVer>
+        <VerInfo_MinorVer>9</VerInfo_MinorVer>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=0.9.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=$(MSBuildProjectName);ProductVersion=0.9.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
+        <UWP_DelphiLogo44>D:\dev\Delphi\multiple-buffering\ICO\pen-icon.png</UWP_DelphiLogo44>
+        <UWP_DelphiLogo150>D:\dev\Delphi\multiple-buffering\ICO\pen-icon.png</UWP_DelphiLogo150>
+        <DCC_ExeOutput>.\appDebug</DCC_ExeOutput>
+        <Icon_MainIcon>ICO\Graphicloads-100-Flat-2-Pen.ico</Icon_MainIcon>
+        <DCC_DcuOutput>.\appDebug\DCU</DCC_DcuOutput>
+    </PropertyGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Delphi.Personality.12</Borland.Personality>
+        <Borland.ProjectType>OptionSet</Borland.ProjectType>
+        <BorlandProject>
+            <Delphi.Personality/>
+        </BorlandProject>
+        <ProjectFileVersion>12</ProjectFileVersion>
+    </ProjectExtensions>
+</Project>

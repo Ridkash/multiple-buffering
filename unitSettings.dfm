@@ -2,8 +2,8 @@ object settings: Tsettings
   Left = 0
   Top = 0
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
-  ClientHeight = 229
-  ClientWidth = 673
+  ClientHeight = 322
+  ClientWidth = 641
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,8 +15,8 @@ object settings: Tsettings
   PixelsPerInch = 96
   TextHeight = 13
   object ButtonCancel: TButton
-    Left = 582
-    Top = 176
+    Left = 542
+    Top = 272
     Width = 75
     Height = 25
     Caption = #1086#1090#1084#1077#1085#1072
@@ -24,8 +24,8 @@ object settings: Tsettings
     OnClick = ButtonCancelClick
   end
   object ButtonSave: TButton
-    Left = 481
-    Top = 176
+    Left = 424
+    Top = 272
     Width = 75
     Height = 25
     Caption = #1089#1086#1093#1088#1072#1085#1080#1090#1100
@@ -33,9 +33,9 @@ object settings: Tsettings
     OnClick = ButtonSaveClick
   end
   object gTimer: TGroupBox
-    Left = 407
-    Top = 8
-    Width = 250
+    Left = 399
+    Top = 13
+    Width = 221
     Height = 126
     Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1090#1072#1081#1084#1077#1088#1072
     TabOrder = 2
@@ -76,6 +76,7 @@ object settings: Tsettings
       Width = 38
       Height = 21
       Enabled = False
+      ReadOnly = True
       TabOrder = 3
       Text = '4'
     end
@@ -100,6 +101,8 @@ object settings: Tsettings
       Top = 19
       Width = 38
       Height = 21
+      Enabled = False
+      ReadOnly = True
       TabOrder = 6
       Text = '12'
     end
@@ -162,20 +165,17 @@ object settings: Tsettings
       TabOrder = 1
       Text = '99'
     end
-    object bashCheack: TCheckBox
-      Left = 0
-      Top = 264
-      Width = 206
-      Height = 17
-      BiDiMode = bdRightToLeft
-      Caption = #1057#1082#1088#1099#1074#1072#1090#1100' '#1082#1086#1084#1072#1085#1076#1099' '#1086#1090' BASH - history                            '
-      ParentBiDiMode = False
-      TabOrder = 2
-      Visible = False
-    end
     object EditBuferL: TEdit
       Left = 181
       Top = 70
+      Width = 188
+      Height = 21
+      TabOrder = 2
+      Text = #1058#1091#1090' '#1089#1086#1076#1077#1088#1078#1080#1090#1089#1103' '#1074#1089#1077#1075#1076#1072' '#1086#1076#1080#1085' '#1073#1091#1092#1077#1088
+    end
+    object EditBuferM: TEdit
+      Left = 181
+      Top = 110
       Width = 188
       Height = 21
       TabOrder = 3
@@ -189,13 +189,158 @@ object settings: Tsettings
       TabOrder = 4
       Text = #1058#1091#1090' '#1089#1086#1076#1077#1088#1078#1080#1090#1089#1103' '#1074#1089#1077#1075#1076#1072' '#1086#1076#1080#1085' '#1073#1091#1092#1077#1088
     end
-    object EditBuferM: TEdit
-      Left = 181
-      Top = 110
-      Width = 188
+  end
+  object gNotice: TGroupBox
+    Left = 8
+    Top = 159
+    Width = 385
+    Height = 114
+    Caption = ' '
+    TabOrder = 4
+    object noticeNumberCurrent: TLabel
+      Left = 2
+      Top = 50
+      Width = 22
+      Height = 25
+      Caption = '12'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -21
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object noticeNumberZnak: TLabel
+      Left = 30
+      Top = 49
+      Width = 8
+      Height = 25
+      Caption = '/'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -21
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object noticeNumberAll: TLabel
+      Left = 44
+      Top = 50
+      Width = 22
+      Height = 25
+      Caption = '12'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -21
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object noticeNumberPrevious: TButton
+      Left = 74
+      Top = 50
+      Width = 25
+      Height = 23
+      Cursor = crHandPoint
+      Caption = '<'
+      TabOrder = 0
+      OnClick = noticeNumberPreviousClick
+    end
+    object noticeNumberFollowing: TButton
+      Left = 98
+      Top = 50
+      Width = 25
+      Height = 23
+      Cursor = crHandPoint
+      Caption = '>'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 1
+      OnClick = noticeNumberFollowingClick
+    end
+    object noticeChange: TButton
+      Left = 247
+      Top = 50
+      Width = 75
+      Height = 25
+      Cursor = crHandPoint
+      Caption = #1080#1079#1084#1077#1085#1080#1090#1100
+      TabOrder = 2
+    end
+    object noticeBody: TEdit
+      Left = 201
+      Top = 23
+      Width = 121
+      Height = 21
+      TabOrder = 3
+      Text = #1058#1077#1083#1086
+    end
+    object noticeTime: TEdit
+      Left = 11
+      Top = 23
+      Width = 57
+      Height = 21
+      TabOrder = 4
+      Text = #1042#1088#1077#1084#1103
+    end
+    object noticeTitle: TEdit
+      Left = 74
+      Top = 23
+      Width = 121
       Height = 21
       TabOrder = 5
-      Text = #1058#1091#1090' '#1089#1086#1076#1077#1088#1078#1080#1090#1089#1103' '#1074#1089#1077#1075#1076#1072' '#1086#1076#1080#1085' '#1073#1091#1092#1077#1088
+      Text = #1064#1072#1087#1082#1072
     end
+    object noticeAdd: TButton
+      Left = 328
+      Top = 24
+      Width = 25
+      Height = 20
+      Cursor = crHandPoint
+      Caption = '+'
+      TabOrder = 6
+      OnClick = noticeAddClick
+    end
+    object noticeDelete: TButton
+      Left = 357
+      Top = 24
+      Width = 25
+      Height = 20
+      Cursor = crHandPoint
+      Caption = '-'
+      TabOrder = 7
+      OnClick = noticeDeleteClick
+    end
+    object timerIsActive: TButton
+      Left = 247
+      Top = 81
+      Width = 75
+      Height = 25
+      Caption = 'TIMER'
+      TabOrder = 8
+      OnClick = timerIsActiveClick
+    end
+  end
+  object bashCheack: TCheckBox
+    Left = 845
+    Top = 26
+    Width = 206
+    Height = 17
+    BiDiMode = bdRightToLeft
+    Caption = #1057#1082#1088#1099#1074#1072#1090#1100' '#1082#1086#1084#1072#1085#1076#1099' '#1086#1090' BASH - history                            '
+    ParentBiDiMode = False
+    TabOrder = 5
+    Visible = False
+  end
+  object noticeTimer: TTimer
+    Enabled = False
+    Interval = 8000
+    OnTimer = noticeTimerTimer
+    Left = 360
+    Top = 215
   end
 end

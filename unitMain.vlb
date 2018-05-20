@@ -216,5 +216,23 @@ Coordinates=945,1,88,36
 Coordinates=793,441,75,36
 
 []
-Coordinates=793,551,91,36
+Coordinates=643,87,91,36
+
+[notices1]
+Coordinates=130,87,63,36
+
+[TEST]
+Coordinates=231,87,47,36
+
+[timerNote]
+Coordinates=292,87,70,36
+
+[N10]
+Coordinates=397,87,40,36
+
+[hotkeys1]
+Coordinates=539,87,66,36
+
+[EST21]
+Coordinates=539,425,54,36
 

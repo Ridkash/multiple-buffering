@@ -7,6 +7,13 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
 
 type
+ TRecAlarm = Record
+  alarmNoticeTime : String[10]; // время для аларм
+  alarmStatus : word; // не выключен ли будильник
+  alarmNoticeTitle:  String[20];
+  alarmNoticeBody:  String[20];
+  alarmNoticeId:  word;
+ End;
   Tsettings = class(TForm)
     ButtonCancel: TButton;
     ButtonSave: TButton;
@@ -31,18 +38,45 @@ type
     EditBuferP: TEdit;
     EditBuferM: TEdit;
     LabelBuferM: TLabel;
+    noticeTime: TEdit;
+    noticeTitle: TEdit;
+    noticeBody: TEdit;
+    noticeChange: TButton;
+    noticeNumberCurrent: TLabel;
+    noticeNumberZnak: TLabel;
+    noticeNumberAll: TLabel;
+    noticeNumberPrevious: TButton;
+    noticeNumberFollowing: TButton;
+    gNotice: TGroupBox;
+    noticeAdd: TButton;
+    noticeDelete: TButton;
+    noticeTimer: TTimer;
+    timerIsActive: TButton;
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure noticeAddClick(Sender: TObject);
+    procedure noticeClearClick(Sender: TObject);
+    procedure noticeInit(numCurrient:integer);
+    procedure noticeDeleteClick(Sender: TObject);
+    procedure noticeNumberFollowingClick(Sender: TObject);
+    procedure noticeNumberPreviousClick(Sender: TObject);
+    procedure noticeTimerTimer(Sender: TObject);
+    procedure timerIsActiveClick(Sender: TObject);
 
   private
     { Private declarations }
+
   public
 
     { Public declarations }
     numberPageMax:word;      // число страниц копипаста по умолчанию 99 страниц переменная равна 99;
-    numberPageСurrent:word // номер текущей страницы
+    numberPageСurrent:word; // номер текущей страницы
 
+    // переменные settinhs alarm
+    noticeInitCurrent: word; // текущая страница alarm
+    alarmMass: array[1..100] of TRecAlarm;
+    alarmNumPage: word;
   end;
 
 var
@@ -52,11 +86,141 @@ implementation
 
 {$R *.dfm}
 
-uses unitMain;
+uses unitMain, unitBuffer;
+
+procedure Tsettings.noticeClearClick(Sender: TObject);
+begin
+ Try
+    main.cmdSql(1,'DELETE FROM notices;',main.tmp);
+    main.cmdSql(1,'drop table notices;',main.tmp);
+ finally
+  main.cmdSql(1,'create table notices (time,title,body);',main.tmp);
+ End;
+
+
+showmessage('Успешно сброшена!');
+
+end;
+procedure Tsettings.noticeDeleteClick(Sender: TObject);
+begin
+if(settings.noticeDelete.Caption='-') then begin
+//тут удаляем запись с БД
+end else begin
+//тут возвращаем обратно состояние
+  settings.noticeAdd.Caption:='+';
+  settings.noticeDelete.Caption:='-';
+  settings.noticeTime.Text :='00:00';
+  settings.noticeTitle.Text := '*Заголовок*';
+  settings.noticeBody.Text := '*Основной текст*';
+end;
+
+end;
+
+procedure Tsettings.noticeInit(numCurrient:integer);
+var
+  i: Integer;
+begin
+
+  //Заполню alarm_settings
+  main.cmdSql(0,'SELECT count(1) from notices',main.tmp);
+  settings.noticeNumberAll.Caption:=main.tmp;
+
+  settings.noticeNumberCurrent.Caption :=  inttostr(settings.noticeInitCurrent);
+
+  main.cmdSql(0,'SELECT nn.time from notices nn where nn.rowid='+inttostr(numCurrient),main.tmp);
+  settings.noticeTime.Text := main.tmp;
+
+  main.cmdSql(0,'SELECT nn.title from notices nn  where nn.rowid='+inttostr(numCurrient),main.tmp);
+  settings.noticeTitle.Text := main.tmp;
+
+  main.cmdSql(0,'SELECT nn.body from notices nn where nn.rowid='+inttostr(numCurrient),main.tmp);
+  settings.noticeBody.Text := main.tmp;
+//  inc(alarmNumPage);
+
+
+
+
+
+
+  settings.noticeAdd.Caption := '+';
+  settings.noticeDelete.Caption := '-';
+
+end;
+
+
+
+procedure Tsettings.noticeNumberFollowingClick(Sender: TObject);
+begin
+if (strtoint(settings.noticeNumberAll.Caption) > strtoint(settings.noticeNumberCurrent.Caption)) then begin
+  inc(alarmNumPage);
+  settings.noticeInit(alarmNumPage);
+  settings.noticeNumberCurrent.Caption := inttostr(alarmNumPage);
+end;
+end;
+
+procedure Tsettings.noticeNumberPreviousClick(Sender: TObject);
+begin
+if (1 > (alarmNumPage - 1)) then settings.noticeNumberCurrent.Caption := '1'
+  else begin alarmNumPage:=alarmNumPage - 1 ;
+    settings.noticeInit(alarmNumPage);
+    settings.noticeNumberCurrent.Caption := inttostr(alarmNumPage);
+  end;
+end;
+
+procedure Tsettings.noticeTimerTimer(Sender: TObject);
+
+var toTime : TDATETIME;
+j,i:integer;
+miTime:TDate;
+isTime:boolean;
+begin
+
+toTime:=Time;
+isTime:=true;
+miTime:= strtotime('23:59');
+
+for i := strtoint(settings.noticeNumberAll.Caption) downto 1 do  begin
+
+//showmessage((settings.alarmMass[i].alarmNoticeTime));
+try
+  miTime:=strToTime(settings.alarmMass[i].alarmNoticeTime);
+except        
+  isTime:=false; 
+  buffer.StatusBar1.Panels[1].Text := 'ошибка времени';
+
+end;          
+
+ if (toTime > miTime ) and (settings.alarmMass[i].alarmStatus=1) and isTime then begin
+ showmessage(settings.alarmMass[i].alarmNoticeTime);
+  main.notice('1',settings.alarmMass[i].alarmNoticeTime,settings.alarmMass[i].alarmNoticeTitle,settings.alarmMass[i].alarmNoticeBody);
+  main.noticeAlarmNumActive:=i;
+  buffer.ok.Visible:=true;
+ end;
+end;
+
+end;
+
+procedure Tsettings.timerIsActiveClick(Sender: TObject);
+begin
+
+
+if settings.noticeTimer.Enabled then begin
+ settings.timerIsActive.Caption := 'start';
+ settings.noticeTimer.Enabled := false;
+end else begin
+
+ settings.timerIsActive.Caption := 'stop';
+
+ settings.noticeTimer.Enabled := true;
+end;
+
+
+end;
 
 procedure Tsettings.ButtonCancelClick(Sender: TObject);
 begin
 settings.Hide;
+
 end;
 
 procedure Tsettings.ButtonSaveClick(Sender: TObject);
@@ -82,8 +246,8 @@ begin
 
   // bash cheack записываю
     if settings.bashCheack.Checked then begin
-      main.bashSpace:=' ';
-      main.cmdSql(1,'update settings SET value="1" where param="BashCheack"',tmp);
+       main.bashSpace:=' ';
+       main.cmdSql(1,'update settings SET value="1" where param="BashCheack"',tmp);
 
     end else begin
        main.bashSpace:='';
@@ -100,6 +264,7 @@ procedure Tsettings.FormCreate(Sender: TObject);
 var
   res:string;
 begin
+alarmNumPage:=1;
 
   main.cmdSql(0,'select s.value FROM settings s WHERE param="numberPageMax";',res);
   settings.numberPageMax:=strtoint(res);
@@ -130,18 +295,51 @@ begin
 
   main.cmdSql(0,'select s.value FROM settings s WHERE param="BashCheack";',res);
 
-  if strtoint(res)=1 then begin
-    settings.bashCheack.Checked:=true;
-    main.bashSpace:=' ';
-  end else begin
-   settings.bashCheack.Checked:=false;
-       main.bashSpace:='';
-  end;
+
+
+
+
+//  if strtoint(res)=1 then begin
+//    settings.bashCheack.Checked:=true;
+//    main.bashSpace:=' ';
+//  end else begin
+//    settings.bashCheack.Checked:=false;
+//    main.bashSpace:='';
+//  end;
 
 
 
 
   main.pageInitSQL(settings.numberPageСurrent);
+
+// NoticeSettings init
+  settings.noticeInitCurrent := 1;
+  settings.noticeInit(alarmNumPage);
+
+main.syncDbApp();
 end;
+
+procedure Tsettings.noticeAddClick(Sender: TObject);
+begin
+if(settings.noticeAdd.Caption='+') then begin
+//Готовим место чтобы получить данные с кнопок
+  settings.noticeAdd.Caption:='OK';
+  settings.noticeDelete.Caption :='X';
+  settings.noticeTime.Text :=timetostr(time);;
+  settings.noticeTitle.Text := '*Заголовок*';
+  settings.noticeBody.Text := '*Основной текст*'
+end else begin
+//Начинаем писать в БД
+  settings.noticeAdd.Caption:='+';
+    settings.noticeDelete.Caption :='-';
+  main.cmdSql(1,'insert INTO notices (time,title,body,status) VALUES ("'+settings.noticeTime.Text+'","'+settings.noticeTitle.Text+'","'+settings.noticeBody.Text+'","1");',main.tmp);
+  settings.noticeTitle.Text ;
+  settings.noticeInit(alarmNumPage);
+
+end;
+
+end;
+
+
 
 end.

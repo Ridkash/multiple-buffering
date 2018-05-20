@@ -6,7 +6,9 @@ uses
  IniFiles,unitSettings,unitBuffer,
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, Vcl.ComCtrls,Clipbrd,
-  Vcl.Buttons, Data.FMTBcd, Data.DbxSqlite, Data.DB, Data.SqlExpr;
+  Vcl.Buttons, Data.FMTBcd, Data.DbxSqlite, Data.DB, Data.SqlExpr,
+  IWBaseComponent, IWBaseHTMLComponent, IWBaseHTML40Component, IWCompExtCtrls,
+  Vcl.ExtCtrls;
 type
   Tmain = class(TForm)
     titleItems: TComboBox;
@@ -87,7 +89,11 @@ type
     BufferConnection: TSQLConnection;
     estbutton1: TMenuItem;
     N10: TMenuItem;
-    N11: TMenuItem;
+    TEST: TMenuItem;
+    EST21: TMenuItem;
+    timerNote: TTimer;
+    hotkeys1: TMenuItem;
+    notices1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure N3Click(Sender: TObject);
 
@@ -140,14 +146,19 @@ type
     procedure titleItemsChange(Sender: TObject);
     procedure N10Click(Sender: TObject);
     procedure N0811Click(Sender: TObject);
-    procedure N11Click(Sender: TObject);
+    procedure TESTClick(Sender: TObject);
+
+    procedure EST21Click(Sender: TObject);
+    procedure hotkeys1Click(Sender: TObject);
+    procedure notices1Click(Sender: TObject);
+    procedure timeUseClick(Sender: TObject);
 
 
   private
     { Private declarations }
     id1, id2, id3, id4: Integer;
     id_C_1, id_C_2, id_C_3, id_C_4, id_C_5,id_C_6, id_C_7, id_C_8, id_C_9, id_C_0, id_C_T, id_C_SB, id_C_G, id_C_S,id_C_l, id_C_p, id_C_m: Integer;
-    id_A_1, id_A_2, id_A_3, id_A_4, id_A_5,id_A_6, id_A_7, id_A_8, id_A_9, id_A_0, id_A_T: Integer;
+//    id_A_1, id_A_2, id_A_3, id_A_4, id_A_5,id_A_6, id_A_7, id_A_8, id_A_9, id_A_0, id_A_T: Integer;
     id_following,id_previous:integer;
 
     procedure WMHotKey(var Msg: TWMHotKey); message WM_HOTKEY;
@@ -157,9 +168,15 @@ type
 //    numberPageMax:word;      // число страниц копипаста по умолчанию 99 страниц переменная равна 99;
     bufferG:string;
     bashSpace : string;
+    AlarmON: string;
     tmp: string;
+    tmpInt : integer;
     numberPageCurrent:word;  // Текущая страница
+    noticeAlarmNumActive:word;
     procedure cmdSql( cmd :word; sql:string; var res:string);
+    procedure syncDbApp();
+    procedure dbCreateTable(action,tableNum:word);
+    procedure notice(AlarmOn, time,title,body:string);
     procedure pageInitSQL(needPageNumber:word);
     function trimInSql(str:string): string;
     function trimoutSql(str:string): string;
@@ -178,7 +195,6 @@ var
   currentVersion: string;  // текущая версия приложения
   modUse: integer;         // ctrl,alt
   bufferG: string;         // окно произвольного буфера
-
   tmpMass : Array [0..50] of string;
 
 implementation
@@ -189,11 +205,198 @@ uses unitTimer;
 
 
 //Свои процедуры и функции
+procedure Tmain.syncDbApp();
+var
+    names: TStringList;
+    i,j: Integer;
+    currentField: TField;
+    currentLine: string;
+
+    res,sql: string;
+    cmd:word;
+
+  toTime: TDateTime;
+  MyClass: TComponent;
+
+begin
+//  Query->Open();
+//    str: string;
+toTime:=Time;
+//cmd:=0;
+res:='';
+
+
+main.query.SQL.Text:='SELECT * FROM `notices`';
+main.query.Open;
+j:=1;
+if not main.query.IsEmpty then
+  begin
+     main.query.First;
+     names := TStringList.Create;
+     try
+            main.query.GetFieldNames(names);
+            while not main.query.Eof do begin
+              currentLine := '';
+
+              for i := 0 to names.Count - 1 do
+              begin
+                currentField := main.query.FieldByName(names[i]);
+                currentLine := currentField.AsString;
+                case i of
+                  0: settings.alarmMass[j].alarmNoticeTime:= currentLine;
+                  1: settings.alarmMass[j].alarmNoticeTitle:= currentLine;
+                  2: settings.alarmMass[j].alarmNoticeBody:= currentLine;
+                  3: settings.alarmMass[j].alarmStatus:= strtoint(currentLine);
+                  4: settings.alarmMass[j].alarmNoticeId:= strtoint(currentLine);
+                end;
+              end;
+              inc (j);
+              res:= res + currentLine;
+              main.query.Next;
+            end;
+     finally
+       names.Free;
+     end;
+
+  // ДЛЯ ДЕБАГА
+//     showmessage('alarmNoticeTime'+settings.alarmMass[1].alarmNoticeTime  );
+//     showmessage('alarmNoticeTitle'+settings.alarmMass[1].alarmNoticeTitle  );
+//     showmessage('alarmNoticeBody'+settings.alarmMass[1].alarmNoticeBody  );
+//     showmessage('alarmStatus'+inttostr(settings.alarmMass[1].alarmStatus)  );
+//     showmessage('alarmNoticeId'+inttostr(settings.alarmMass[1].alarmNoticeId)  );
+//****************
+  end;
+
+
+
+//////////////////////////////
+
+//showmessage('SQL=>'+res)
+end;
+procedure Tmain.dbCreateTable(action,tableNum:word);
+//  action=1 -сначала удалив
+//tableNum=1 - notices
+//tableNum=2 - settings
+//tableNum=3 - shortcuts
+//tableNum=4 - buffers
+//tableNum=5 - titles
+
+
+begin
+
+case tableNum of
+  1 : begin
+     Try
+     if action=1 then begin
+      main.cmdSql(1,'DELETE FROM notices;',tmp);
+      main.cmdSql(1,'drop table notices;',tmp);
+     end;
+     cmdSql(1,'CREATE TABLE [notices](  [time] TEXT,  [title] TEXT,  [body] TEXT,  [status] INTEGER,    [idrecord] INTEGER PRIMARY KEY AUTOINCREMENT);',tmp);
+     finally
+     showmessage('OK!');
+    End;
+  end;
+
+  2 : begin
+     Try
+     if action=1 then begin
+      main.cmdSql(1,'DELETE FROM settings;',tmp);
+      main.cmdSql(1,'drop table settings;',tmp);
+     end;
+     cmdSql(1,'CREATE TABLE settings (param text,value text);',tmp);
+     finally
+     showmessage('OK!');
+    End;
+  end;
+  3 : begin
+     Try
+     if action=1 then begin
+      main.cmdSql(1,'DELETE FROM shortcuts;',tmp);
+      main.cmdSql(1,'drop table shortcuts;',tmp);
+     end;
+     cmdSql(1,'CREATE TABLE shortcuts (shortcut text,cmd text);',tmp);
+     finally
+     showmessage('OK!');
+    End;
+  end;
+  4 : begin
+     Try
+     if action=1 then begin
+      main.cmdSql(1,'DELETE FROM buffers;',tmp);
+      main.cmdSql(1,'drop table buffers;',tmp);
+     end;
+     cmdSql(1,'CREATE TABLE buffers (item text,notice text);',tmp);
+     finally
+     showmessage('OK!');
+    End;
+  end;
+  5 : begin
+     Try
+     if action=1 then begin
+      main.cmdSql(1,'DELETE FROM titles;',tmp);
+      main.cmdSql(1,'drop table titles;',tmp);
+     end;
+     cmdSql(1,'CREATE TABLE titles (title text);',tmp);
+     finally
+     showmessage('OK!');
+    End;
+  end;
+
+end;
+end;
+
+procedure Tmain.notice(AlarmON, time,title,body:string);
+begin
+
+if AlarmON='1' then begin
+
+  main.timerNote.Interval :=2000;
+  main.timerNote.Enabled:=true;
+  buffer.tablo.Font.Size:=24;
+  buffer.tablo.Caption:=body;
+  buffer.Caption:=time+' '+title;
+
+  if buffer.Color=clBlack  then begin
+   buffer.Color:=clBtnFace;
+   buffer.tablo.Font.Color:= clBlack;
+  end else begin
+   buffer.Color:=clBlack;
+   buffer.tablo.Font.Color:= clWhite;
+  end;
+
+end else begin
+
+  main.timerNote.Interval :=2000;
+  main.timerNote.Enabled:=false;
+  buffer.Color:=clBtnFace;
+  buffer.tablo.Font.Color:= clBlack;
+  buffer.tablo.Font.Size:=9;
+end;
+end;
+procedure Tmain.notices1Click(Sender: TObject);
+begin
+
+
+main.dbCreateTable(1,1);
+//   Try
+//      main.cmdSql(1,'DELETE FROM notices;',tmp);
+//      main.cmdSql(1,'drop table notices;',tmp);
+//   finally
+//    cmdSql(1,'CREATE TABLE [notices](  [time] TEXT,  [title] TEXT,  [body] TEXT,  [status] INTEGER,    [idrecord] INTEGER PRIMARY KEY AUTOINCREMENT);',tmp);
+//    showmessage('Успешно сброшена!');
+//  End;
+
+
+
+end;
+
+//
 // SQL inject
 //  Query->ExecSQL();
 //  Query->Open();
 procedure Tmain.cmdSql( cmd :word; sql:string; var res:string);
-var str: string;
+var
+//    str: string;
     names: TStringList;
     i: Integer;
     currentField: TField;
@@ -230,50 +433,35 @@ main.query.SQL.Text:=sql;
 
     end;
     1 : main.query.ExecSQL();
-    else ShowMessage(' неизвестная команда');
+    else ShowMessage(' неизвестная команда в cmdSql()');
   end;
 end;
-
-
-
-
-
-
-
-
 
 
 ////////////
-function toAddLine(inStr:string):string;
-var
-  i:word;
-begin
+//function toAddLine(inStr:string):string;
+//var
+//  i:word;
+//begin
+//
+//  result :=(inttostr(inStr.Length));
+//end;
 
-  result :=(inttostr(inStr.Length));
-end;
+//function dropLines(inStr: string):string;
+//  var i: word;
+//    outStr:string;
+//begin
+//  i:=0;
+//  while i < inStr.Length do begin
+//    outStr[i]:=inStr[i];
+//    if (i=250) then outStr:=outStr + '';
+//
+//
+//    i:=i+1;
+//    result:=outStr;
+//  end;
+//end;
 
-function dropLines(inStr: string):string;
-  var i: word;
-    outStr:string;
-begin
-  i:=0;
-  while i < inStr.Length do begin
-    outStr[i]:=inStr[i];
-    if (i=250) then outStr:=outStr + '';
-
-
-    i:=i+1;
-    result:=outStr;
-  end;
-end;
-
-
-
-function toAddLines(inStr:string):string;
-
-begin
-
-end;
 function replaceSub(str, sub_in, sub_out: string): string;
 var
   aPos: integer;
@@ -287,14 +475,27 @@ begin
       delete(str, 1, aPos + length(sub_in) - 1);
       aPos:=pos(sub_in, str)
     end;
-
-
   result:=rslt + str
 end;
+
+
+procedure Tmain.timeUseClick(Sender: TObject);
+begin
+main.notice('1',settings.alarmMass[main.noticeAlarmNumActive].alarmNoticeTime,settings.alarmMass[main.noticeAlarmNumActive].alarmNoticeTitle,settings.alarmMass[main.noticeAlarmNumActive].alarmNoticeBody);
+buffer.Visible:=true;
+end;
+
 procedure Tmain.titleItemsChange(Sender: TObject);
+//var i :integer;
+
 begin
 //  main.titleItems.ItemIndex:= main.titleItems.ItemIndex-1;
-  pageinitsql(main.titleItems.ItemIndex+1);
+
+  //убирает ошибку при вводе
+  if main.titleItems.ItemIndex < 1  then main.titleItems.ItemIndex := tmpInt
+    else tmpInt:= main.titleItems.ItemIndex;
+
+  pageinitsql(main.titleItems.ItemIndex+1); //перходит на выбранную страницу
 end;
 
 function Tmain.trimInSql(str:string): string;
@@ -306,10 +507,12 @@ begin
   result:= replaceSub(trim(str),'#3696#','"');
 end;
 
+
+
 /////
 procedure savePageSQL();
 var
-  i:word;
+//  i:word;
   bufferCount: word;
   tmp,sql:string;
 begin
@@ -503,26 +706,12 @@ begin
     if Msg.HotKey = id3 then ShowMessage('Win + F4 pressed !');
     if Msg.HotKey = id4 then ShowMessage('Print Screen pressed !'); }
 
+
+
   if Msg.HotKey = id_C_1 then begin
      main.copy1.Click;
- {   keybd_event(VK_LCONTROL,0,0,0);
-     keybd_event(Ord('r'),0,0,0);
-     keybd_event(Ord('r'), 0, KEYEVENTF_KEYUP, 0);
-     keybd_event(VK_LCONTROL, 0, KEYEVENTF_KEYUP, 0)}
-
-    //  keybd_event(VK_RSHIFT,0,0,0);
-
-      keybd_event(Ord('V'),0,0,0);
-      keybd_event(Ord('V'),0,KEYEVENTF_KEYUP,0);
-     // keybd_event(VK_INSERT,0,0,0);
-     //(VK_INSERT, 0, KEYEVENTF_KEYUP, 0);
-     // keybd_event(VK_RSHIFT, 0, KEYEVENTF_KEYUP, 0);
-
-
-    // keybd_event(VK_MENU,0,0,0);
-    // keybd_event(Ord('2'), 0, 0, 0);
-    // keybd_event(Ord('2'), 0, KEYEVENTF_KEYUP, 0);
-  //   keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0);
+     keybd_event(Ord('V'),0,0,0);
+     keybd_event(Ord('V'),0,KEYEVENTF_KEYUP,0);
 
   end;
   if Msg.HotKey = id_C_2 then begin
@@ -784,6 +973,27 @@ begin
   buffer.StatusBar1.Panels[0].Text := 'page: '+pageNumber.Caption;
 end;
 
+procedure Tmain.EST21Click(Sender: TObject);
+var today,tt : TDateTime;
+  s: string;
+begin
+main.AlarmON:='0';
+main.notice(AlarmON,'','','');
+main.syncDbApp();
+
+
+  today := Time;
+     showmessage(timetostr(today));
+//   if today > strToTime(settings.alarmMass[1].alarmNoticeTime) then showmessage('JOPA ' + settings.alarmMass[1].alarmNoticeTime);
+
+  tt:=strtotime('20:30:00');
+  if today < tt then showmessage('NICE!!!');
+  showmessage('ok'+timeToStr(today+tt));
+  ShowMessage('текущее время = '+TimeToStr(today));
+
+
+end;
+
 procedure Tmain.estbutton1Click(Sender: TObject);
 var str:string;
 begin
@@ -799,7 +1009,17 @@ main.cmdSql(1,'insert INTO settings (param,value) VALUES ("numberDayWorkParts","
 main.cmdSql(1,'insert INTO settings (param,value) VALUES ("secTimerUpdate","2");',str);
 main.cmdSql(1,'insert INTO settings (param,value) VALUES ("BashCheack","0");',tmp);
 
-showmessage('Успешно сброшена!');
+
+//main.cmdSql(1,'DELETE FROM shortcuts;',tmp);
+//main.cmdSql(1,'drop table shortcuts;',tmp);
+//cmdSql(1,'create table shortcuts (shortcut text,cmd text);',tmp);
+//cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("g", "буфер G");',tmp);
+//cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("l", "буфер K");',tmp);
+//cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("p", "буфер P");',tmp);
+//cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("m", "буфер M");',tmp);
+//
+//showmessage('Успешно сброшена!');
+
 end;
 
 procedure Tmain.paste0Click(Sender: TObject);
@@ -867,6 +1087,19 @@ if (strtoint(pageNumber.Caption)=1) then pageNumber.Caption := inttostr(settings
 
 end;
 
+procedure Tmain.TESTClick(Sender: TObject);
+var i: word;
+begin
+//for i := 1 to strtoint(settings.noticeNumberAll.Caption) do  begin
+//showmessage('alarmNoticeTime '+inttostr(i)+' '+settings.alarmMass[i].alarmNoticeTime);
+//showmessage('alarmNoticeTitle '+inttostr(i)+' '+settings.alarmMass[i].alarmNoticeTitle);
+//showmessage('alarmNoticeBody '+inttostr(i)+' '+settings.alarmMass[i].alarmNoticeBody);
+//showmessage('alarmStatus '+inttostr(i)+' '+inttostr(settings.alarmMass[i].alarmStatus));
+//showmessage('alarmNoticeId '+inttostr(i)+' '+inttostr(settings.alarmMass[i].alarmNoticeId));
+//end;
+
+end;
+
 procedure Tmain.changeTitleClick(Sender: TObject);
 var s:string;
 begin
@@ -917,17 +1150,19 @@ var
 
 //////////
   initNumberPageCurrent,initNumberPageMax,i: word;
-  a,b,tmp: string;
-  fileSettingsName:string;
+//  a,b,
+  tmp: string;
+//  fileSettingsName:string;
   dbName : string;
-  names: TStringList;
+//  names: TStringList;
 begin
 
   //Инициализация переменных
   status.Panels[1].text:='инициализация данных...';
   initNumberPageMax := 99;    // Число страниц (по умолчанию)
   numberPageCurrent := 1; // Текущая страница
-  currentVersion:='0.8.3';
+  currentVersion:='0.9.0';
+
 
   status.Panels[0].text:='';
 
@@ -958,10 +1193,13 @@ begin
     //создаю бд и записываю рандомные значения
     showmessage('Буду сосздавать базу (минутку после нажатия ОК) ');
     main.BufferConnection.Connected:=true;
-    cmdSql(1,'create table buffers (item text,notice text);',tmp);
-    cmdSql(1,'create table titles (title text);',tmp);
-    cmdSql(1,'create table shortcuts (shortcut text,cmd text);',tmp);
-    cmdSql(1,'create table settings (param text,value text);',tmp);
+
+    main.dbCreateTable(0,1);
+    main.dbCreateTable(0,2);
+    main.dbCreateTable(0,3);
+    main.dbCreateTable(0,4);
+    main.dbCreateTable(0,5);
+
     cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageLast","'+inttostr(numberPageCurrent)+'");',tmp);
     cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageMax","'+inttostr(initNumberPageMax)+'");',tmp);
     cmdSql(1,'insert INTO settings (param,value) VALUES ("hoursDayWorkComplited","12");',tmp);
@@ -1315,6 +1553,20 @@ begin
   goUp(9);
 end;
 
+procedure Tmain.hotkeys1Click(Sender: TObject);
+begin
+main.cmdSql(1,'DELETE FROM shortcuts;',tmp);
+main.cmdSql(1,'drop table shortcuts;',tmp);
+cmdSql(1,'create table shortcuts (shortcut text,cmd text);',tmp);
+cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("g", "буфер G");',tmp);
+cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("l", "буфер K");',tmp);
+cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("p", "буфер P");',tmp);
+cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("m", "буфер M");',tmp);
+
+showmessage('Успешно сброшена!');
+
+end;
+
 procedure Tmain.N0811Click(Sender: TObject);
 begin
   showmessage('Базу дотяну с 0.8.0 до 0.8.1');
@@ -1326,31 +1578,15 @@ begin
 fTimer.show;
 end;
 
-procedure Tmain.N11Click(Sender: TObject);
-begin
-
-main.cmdSql(1,'DELETE FROM shortcuts;',tmp);
-main.cmdSql(1,'drop table shortcuts;',tmp);
-cmdSql(1,'create table shortcuts (shortcut text,cmd text);',tmp);
-cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("g", "буфер G");',tmp);
-cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("l", "буфер K");',tmp);
-cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("p", "буфер P");',tmp);
-cmdSql(1,'INSERT INTO shortcuts (shortcut, cmd) VALUES ("m", "буфер M");',tmp);
-
-showmessage('Успешно сброшена!');
-end;
-
 procedure Tmain.N2Click(Sender: TObject);
 begin
     if main.N2.Checked then main.FormStyle:=fsStayOnTop
       else main.FormStyle:=fsNormal;
 end;
 procedure Tmain.N3Click(Sender: TObject);
-var tmp : string;
+//var tmp : string;
 begin
   savePageSql();
-
-  
 end;
 procedure Tmain.N4Click(Sender: TObject);
 var tmp:string;
@@ -1498,7 +1734,8 @@ procedure Tmain.N9Click(Sender: TObject);
 var a: word;
 begin
 a := strtoint(InputBox('Перейти на страницу:', '№', '0'));
-if (a >= 0) and (a <= settings.numberPageMax) then begin
+//if (a >= 0) and (a <= settings.numberPageMax) then begin
+if (a <= settings.numberPageMax) then begin
   pageinitsql(a);
   main.status.Panels.Items[1].Text:='перешел';
   end else main.status.Panels.Items[1].Text:= 'страница не найдена';

@@ -2,8 +2,8 @@ object main: Tmain
   Left = 0
   Top = 0
   Caption = 'Multi buffer ver.'
-  ClientHeight = 510
-  ClientWidth = 301
+  ClientHeight = 534
+  ClientWidth = 306
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clBlue
@@ -5988,8 +5988,8 @@ object main: Tmain
   end
   object status: TStatusBar
     Left = 0
-    Top = 491
-    Width = 301
+    Top = 515
+    Width = 306
     Height = 19
     Panels = <
       item
@@ -6022,6 +6022,8 @@ object main: Tmain
       item
         Width = 50
       end>
+    ExplicitTop = 434
+    ExplicitWidth = 300
   end
   object changeTitle: TBitBtn
     Left = 275
@@ -6420,8 +6422,8 @@ object main: Tmain
     OnClick = goUp0Click
   end
   object MainMenu1: TMainMenu
-    Left = 320
-    Top = 48
+    Left = 144
+    Top = 464
     object N1: TMenuItem
       Caption = #1052#1077#1085#1102
       object N4: TMenuItem
@@ -6451,9 +6453,13 @@ object main: Tmain
         Caption = #1057#1073#1088#1086#1089#1080#1090#1100' '#1090#1072#1073#1083#1080#1094#1091' '#1085#1072#1089#1090#1088#1086#1077#1082
         OnClick = estbutton1Click
       end
-      object N11: TMenuItem
-        Caption = #1057#1073#1088#1086#1089#1080#1090#1100' '#1075#1086#1088#1103#1095#1080#1077' '#1082#1085#1086#1087#1082#1080
-        OnClick = N11Click
+      object hotkeys1: TMenuItem
+        Caption = #1057#1073#1088#1086#1089' hotkeys'
+        OnClick = hotkeys1Click
+      end
+      object notices1: TMenuItem
+        Caption = #1057#1073#1088#1086#1089' notices'
+        OnClick = notices1Click
       end
     end
     object buffer1: TMenuItem
@@ -6476,15 +6482,21 @@ object main: Tmain
       Caption = #1089#1086#1093#1088#1072#1085#1080#1090#1100
       OnClick = N3Click
     end
-    object TMenuItem
+    object TEST: TMenuItem
+      Caption = 'TEST'
+      OnClick = TESTClick
+    end
+    object EST21: TMenuItem
+      Caption = 'TEST2'
+      OnClick = EST21Click
     end
   end
   object query: TSQLQuery
     MaxBlobSize = -1
     Params = <>
     SQLConnection = BufferConnection
-    Left = 320
-    Top = 128
+    Left = 112
+    Top = 464
   end
   object BufferConnection: TSQLConnection
     ConnectionName = 'buffer'
@@ -6502,7 +6514,13 @@ object main: Tmain
       'FailIfMissing=false'
       'Database='
       'HostName=')
-    Left = 319
-    Top = 88
+    Left = 175
+    Top = 464
+  end
+  object timerNote: TTimer
+    Enabled = False
+    OnTimer = timeUseClick
+    Left = 80
+    Top = 464
   end
 end

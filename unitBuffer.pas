@@ -10,8 +10,10 @@ type
   Tbuffer = class(TForm)
     StatusBar1: TStatusBar;
     tablo: TLabel;
+    ok: TButton;
     procedure FormPaint(Sender: TObject);
     procedure Memo1Change(Sender: TObject);
+    procedure okClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -25,7 +27,7 @@ implementation
 
 {$R *.dfm}
 
-uses unitMain;
+uses unitMain, unitSettings;
 
 procedure Tbuffer.FormPaint(Sender: TObject);
 begin
@@ -35,6 +37,16 @@ end;
 procedure Tbuffer.Memo1Change(Sender: TObject);
 begin
 Application.RestoreTopMosts;
+end;
+
+procedure Tbuffer.okClick(Sender: TObject);
+begin
+    settings.alarmMass[main.noticeAlarmNumActive].alarmStatus:=0;
+    main.noticeAlarmNumActive:=0;
+    buffer.ok.Visible:=false;
+    main.notice('0','','','');
+    settings.noticeTimer.Enabled := true;
+
 end;
 
 end.

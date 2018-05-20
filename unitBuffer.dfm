@@ -5,7 +5,7 @@ object buffer: Tbuffer
   Caption = 'buffer'
   ClientHeight = 70
   ClientWidth = 309
-  Color = clBtnFace
+  Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -24,7 +24,7 @@ object buffer: Tbuffer
     Align = alClient
     Color = clWhite
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
+    Font.Color = clDefault
     Font.Height = -12
     Font.Name = 'Tahoma'
     Font.Style = []
@@ -45,5 +45,16 @@ object buffer: Tbuffer
       item
         Width = 50
       end>
+  end
+  object ok: TButton
+    Left = 256
+    Top = 24
+    Width = 53
+    Height = 27
+    Cursor = crHandPoint
+    Caption = #1087#1086#1085#1103#1090#1085#1086'!'
+    TabOrder = 1
+    Visible = False
+    OnClick = okClick
   end
 end
