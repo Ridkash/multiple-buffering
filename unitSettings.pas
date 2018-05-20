@@ -63,6 +63,7 @@ type
     procedure noticeNumberPreviousClick(Sender: TObject);
     procedure noticeTimerTimer(Sender: TObject);
     procedure timerIsActiveClick(Sender: TObject);
+    procedure noticeChangeClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -87,6 +88,11 @@ implementation
 {$R *.dfm}
 
 uses unitMain, unitBuffer;
+
+procedure Tsettings.noticeChangeClick(Sender: TObject);
+begin
+//main.cmdSql(1,'UPDATE notices SET time = "'+settings.noticeTime.Text+' "," title = "'+settings.noticeTitle.Text+'"," body = "'+settings.noticeBody.Text+'"," status="1" WHERE idRecord = "'+settings.noticeID.Caption +' "');
+end;
 
 procedure Tsettings.noticeClearClick(Sender: TObject);
 begin
@@ -179,19 +185,18 @@ toTime:=Time;
 isTime:=true;
 miTime:= strtotime('23:59');
 
-for i := strtoint(settings.noticeNumberAll.Caption) downto 1 do  begin
+for i := 1 to strtoint(settings.noticeNumberAll.Caption) do  begin
 
 //showmessage((settings.alarmMass[i].alarmNoticeTime));
 try
   miTime:=strToTime(settings.alarmMass[i].alarmNoticeTime);
-except        
-  isTime:=false; 
-  buffer.StatusBar1.Panels[1].Text := 'ошибка времени';
-
+except
+  isTime:=false;
+  buffer.StatusBar1.Panels[1].Text := 'ошибка времени '+inttostr(i);
 end;          
 
  if (toTime > miTime ) and (settings.alarmMass[i].alarmStatus=1) and isTime then begin
- showmessage(settings.alarmMass[i].alarmNoticeTime);
+// showmessage(settings.alarmMass[i].alarmNoticeTime);
   main.notice('1',settings.alarmMass[i].alarmNoticeTime,settings.alarmMass[i].alarmNoticeTitle,settings.alarmMass[i].alarmNoticeBody);
   main.noticeAlarmNumActive:=i;
   buffer.ok.Visible:=true;

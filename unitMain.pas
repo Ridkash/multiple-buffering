@@ -291,9 +291,9 @@ case tableNum of
       main.cmdSql(1,'DELETE FROM notices;',tmp);
       main.cmdSql(1,'drop table notices;',tmp);
      end;
-     cmdSql(1,'CREATE TABLE [notices](  [time] TEXT,  [title] TEXT,  [body] TEXT,  [status] INTEGER,    [idrecord] INTEGER PRIMARY KEY AUTOINCREMENT);',tmp);
      finally
      showmessage('OK!');
+     cmdSql(1,'CREATE TABLE [notices](  [time] TEXT,  [title] TEXT,  [body] TEXT,  [status] INTEGER,    [idrecord] INTEGER PRIMARY KEY AUTOINCREMENT);',tmp);
     End;
   end;
 
@@ -378,13 +378,13 @@ begin
 
 
 main.dbCreateTable(1,1);
-//   Try
-//      main.cmdSql(1,'DELETE FROM notices;',tmp);
-//      main.cmdSql(1,'drop table notices;',tmp);
-//   finally
-//    cmdSql(1,'CREATE TABLE [notices](  [time] TEXT,  [title] TEXT,  [body] TEXT,  [status] INTEGER,    [idrecord] INTEGER PRIMARY KEY AUTOINCREMENT);',tmp);
-//    showmessage('Успешно сброшена!');
-//  End;
+   Try
+      main.cmdSql(1,'DELETE FROM notices;',tmp);
+      main.cmdSql(1,'drop table notices;',tmp);
+   finally
+    cmdSql(1,'CREATE TABLE [notices](  [time] TEXT,  [title] TEXT,  [body] TEXT,  [status] INTEGER,    [idrecord] INTEGER PRIMARY KEY AUTOINCREMENT);',tmp);
+    showmessage('Успешно сброшена!');
+  End;
 
 
 

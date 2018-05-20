@@ -270,6 +270,7 @@ object settings: Tsettings
       Cursor = crHandPoint
       Caption = #1080#1079#1084#1077#1085#1080#1090#1100
       TabOrder = 2
+      OnClick = noticeChangeClick
     end
     object noticeBody: TEdit
       Left = 201

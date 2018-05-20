@@ -6022,8 +6022,6 @@ object main: Tmain
       item
         Width = 50
       end>
-    ExplicitTop = 434
-    ExplicitWidth = 300
   end
   object changeTitle: TBitBtn
     Left = 275
