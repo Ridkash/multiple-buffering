@@ -4,7 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
+  Vcl.ToolWin;
 
 type
  TRecAlarm = Record
@@ -19,11 +20,8 @@ type
     ButtonSave: TButton;
     EditNumberMaxPage: TEdit;
     LabelNumberMaxPage: TLabel;
-    LabelBuferG: TLabel;
-    EditBuferG: TEdit;
     gTimer: TGroupBox;
     timerAllClose: TEdit;
-    mainSettings: TGroupBox;
     timerLabelClose: TLinkLabel;
     TimerCorrectionLabel: TLinkLabel;
     timerCorrectionDay: TEdit;
@@ -32,12 +30,6 @@ type
     Label1: TLabel;
     timerAllHours: TEdit;
     bashCheack: TCheckBox;
-    LabelBuferL: TLabel;
-    LabelBuferP: TLabel;
-    EditBuferL: TEdit;
-    EditBuferP: TEdit;
-    EditBuferM: TEdit;
-    LabelBuferM: TLabel;
     noticeTime: TEdit;
     noticeTitle: TEdit;
     noticeBody: TEdit;
@@ -52,6 +44,13 @@ type
     noticeDelete: TButton;
     noticeTimer: TTimer;
     timerIsActive: TButton;
+    HotKey1: THotKey;
+    StatusBar1: TStatusBar;
+    Splitter1: TSplitter;
+    Label2: TLabel;
+    toAddMe: TMemo;
+    addHotkeyButton: TButton;
+    hotKeyGroup: TGroupBox;
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -64,6 +63,8 @@ type
     procedure noticeTimerTimer(Sender: TObject);
     procedure timerIsActiveClick(Sender: TObject);
     procedure noticeChangeClick(Sender: TObject);
+    procedure HotKey1Change(Sender: TObject);
+    procedure addHotkeyButtonClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -71,13 +72,15 @@ type
   public
 
     { Public declarations }
-    numberPageMax:word;      // число страниц копипаста по умолчанию 99 страниц переменная равна 99;
+//    numberPageMax:word;      // число страниц копипаста по умолчанию 99 страниц переменная равна 99;
     numberPageСurrent:word; // номер текущей страницы
 
     // переменные settinhs alarm
-    noticeInitCurrent: word; // текущая страница alarm
+//    noticeInitCurrent: word; // текущая страница alarm
     alarmMass: array[1..100] of TRecAlarm;
     alarmNumPage: word;
+    alarmID: word; // отображает id в базе текущей формы notice
+    procedure activeTimer();
   end;
 
 var
@@ -88,10 +91,24 @@ implementation
 {$R *.dfm}
 
 uses unitMain, unitBuffer;
+procedure Tsettings.activeTimer();
+begin
+  if settings.noticeTimer.Enabled then begin
+ settings.timerIsActive.Caption := 'start';
+ settings.noticeTimer.Enabled := false;
+end else begin
+
+ settings.timerIsActive.Caption := 'stop';
+
+ settings.noticeTimer.Enabled := true;
+end;
+
+end;
 
 procedure Tsettings.noticeChangeClick(Sender: TObject);
 begin
 //main.cmdSql(1,'UPDATE notices SET time = "'+settings.noticeTime.Text+' "," title = "'+settings.noticeTitle.Text+'"," body = "'+settings.noticeBody.Text+'"," status="1" WHERE idRecord = "'+settings.noticeID.Caption +' "');
+
 end;
 
 procedure Tsettings.noticeClearClick(Sender: TObject);
@@ -128,10 +145,11 @@ var
 begin
 
   //Заполню alarm_settings
+
   main.cmdSql(0,'SELECT count(1) from notices',main.tmp);
   settings.noticeNumberAll.Caption:=main.tmp;
 
-  settings.noticeNumberCurrent.Caption :=  inttostr(settings.noticeInitCurrent);
+  settings.noticeNumberCurrent.Caption :=  inttostr(settings.alarmNumPage);
 
   main.cmdSql(0,'SELECT nn.time from notices nn where nn.rowid='+inttostr(numCurrient),main.tmp);
   settings.noticeTime.Text := main.tmp;
@@ -193,7 +211,7 @@ try
 except
   isTime:=false;
   buffer.StatusBar1.Panels[1].Text := 'ошибка времени '+inttostr(i);
-end;          
+end;
 
  if (toTime > miTime ) and (settings.alarmMass[i].alarmStatus=1) and isTime then begin
 // showmessage(settings.alarmMass[i].alarmNoticeTime);
@@ -207,19 +225,13 @@ end;
 
 procedure Tsettings.timerIsActiveClick(Sender: TObject);
 begin
-
-
-if settings.noticeTimer.Enabled then begin
- settings.timerIsActive.Caption := 'start';
- settings.noticeTimer.Enabled := false;
-end else begin
-
- settings.timerIsActive.Caption := 'stop';
-
- settings.noticeTimer.Enabled := true;
+settings.activeTimer();
 end;
 
-
+procedure Tsettings.addHotkeyButtonClick(Sender: TObject);
+begin
+  main.cmdSql(1,'INSERT INTO shortcuts(cmd, shortcut ) VALUES ("'+ settings.toAddMe.Text +'","$'+IntToHex(main.shortCutKey, 2) +'");',main.tmp);
+  settings.toAddMe.Clear;
 end;
 
 procedure Tsettings.ButtonCancelClick(Sender: TObject);
@@ -229,40 +241,9 @@ settings.Hide;
 end;
 
 procedure Tsettings.ButtonSaveClick(Sender: TObject);
-var tmp :string;
-pageMax:word;
 begin
-    main.cmdSql(1,'update shortcuts SET cmd="'+main.trimInSql(settings.EditBuferG.Text)+'" where shortcut="g"',tmp);
-
-    main.cmdSql(1,'update shortcuts SET cmd="'+main.trimInSql(settings.EditBuferL.Text)+'" where shortcut="l"',tmp);
-    main.cmdSql(1,'update shortcuts SET cmd="'+main.trimInSql(settings.EditBuferP.Text)+'" where shortcut="p"',tmp);
-    main.cmdSql(1,'update shortcuts SET cmd="'+main.trimInSql(settings.EditBuferM.Text)+'" where shortcut="m"',tmp);
-
-    pageMax:=strtoint(settings.EditNumberMaxPage.Text);
-    main.cmdSql(1,'update settings SET value='+inttostr(pageMax)+' where param="numberPageMax"',tmp);
-    settings.numberPageMax:= pageMax;
-    main.pageInitSQL(main.numberPageCurrent);
-
-
-    main.cmdSql(1,'update settings SET value='+trim(settings.timerAllHours.Text)+' where param="hoursDayWorkComplited"',tmp);
-    main.cmdSql(1,'update settings SET value='+trim(settings.timerAllClose.Text)+' where param="numberDayWorkComplited"',tmp);
-    main.cmdSql(1,'update settings SET value='+trim(settings.timerCorrectionDay.Text)+' where param="numberDayWorkParts"',tmp);
-    main.cmdSql(1,'update settings SET value='+trim(settings.timerUpdate.Text)+' where param="secTimerUpdate"',tmp);
-
-  // bash cheack записываю
-    if settings.bashCheack.Checked then begin
-       main.bashSpace:=' ';
-       main.cmdSql(1,'update settings SET value="1" where param="BashCheack"',tmp);
-
-    end else begin
-       main.bashSpace:='';
-       main.cmdSql(1,'update settings SET value="0" where param="BashCheack"',tmp);
-    end;
-
-
-
-    main.status.Panels.Items[1].Text:='настройки сохранены';
-    settings.Hide;
+main.settingsSave();
+settings.Hide;
 end;
 
 procedure Tsettings.FormCreate(Sender: TObject);
@@ -272,7 +253,7 @@ begin
 alarmNumPage:=1;
 
   main.cmdSql(0,'select s.value FROM settings s WHERE param="numberPageMax";',res);
-  settings.numberPageMax:=strtoint(res);
+  main.numberPageMax:=strtoint(res);
 
   main.cmdSql(0,'select s.value FROM settings s WHERE param="numberPageLast";',res);
   settings.numberPageСurrent:=strtoint(res);
@@ -290,15 +271,19 @@ alarmNumPage:=1;
   settings.timerUpdate.Text:=res;
 
   main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="g"',res);
-  settings.EditBuferG.Text:=trim(res);
-  main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="l"',res);
-  settings.EditBuferL.Text:=trim(res);
-  main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="p"',res);
-  settings.EditBuferP.Text:=trim(res);
-  main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="m"',res);
-  settings.EditBuferM.Text:=trim(res);
+//  settings.EditBuferG.Text:=trim(res);
+//  main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="l"',res);
+//  settings.EditBuferL.Text:=trim(res);
+//  main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="p"',res);
+//  settings.EditBuferP.Text:=trim(res);
+//  main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="m"',res);
+//  settings.EditBuferM.Text:=trim(res);
 
   main.cmdSql(0,'select s.value FROM settings s WHERE param="BashCheack";',res);
+
+         main.cmdSql(0,'select s.value FROM settings s WHERE param="noticeTimeIsActiveOnLast";',res);
+        if res='1' then  settings.activeTimer();
+
 
 
 
@@ -318,10 +303,17 @@ alarmNumPage:=1;
   main.pageInitSQL(settings.numberPageСurrent);
 
 // NoticeSettings init
-  settings.noticeInitCurrent := 1;
+//  settings.noticeInitCurrent := 1;
+  settings.alarmNumPage:=1;
   settings.noticeInit(alarmNumPage);
 
 main.syncDbApp();
+end;
+
+procedure Tsettings.HotKey1Change(Sender: TObject);
+begin
+//main.log('=>' + IntToStr(HotKey1.HotKey)+' $'+IntToHex(HotKey1.HotKey, 2));
+main.shortCutKey:=HotKey1.HotKey;
 end;
 
 procedure Tsettings.noticeAddClick(Sender: TObject);

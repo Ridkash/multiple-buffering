@@ -6430,7 +6430,6 @@ object main: Tmain
       end
       object N10: TMenuItem
         Caption = #1058#1072#1081#1084#1077#1088
-        OnClick = N10Click
       end
       object N2: TMenuItem
         AutoCheck = True
@@ -6448,16 +6447,19 @@ object main: Tmain
         OnClick = N9Click
       end
       object estbutton1: TMenuItem
-        Caption = #1057#1073#1088#1086#1089#1080#1090#1100' '#1090#1072#1073#1083#1080#1094#1091' '#1085#1072#1089#1090#1088#1086#1077#1082
+        Caption = #1057#1073#1088#1086#1089' '#1090#1072#1073#1083#1080#1094#1099' settings'
         OnClick = estbutton1Click
       end
       object hotkeys1: TMenuItem
-        Caption = #1057#1073#1088#1086#1089' hotkeys'
+        Caption = #1057#1073#1088#1086#1089' '#1090#1072#1073#1083#1080#1094#1099' hotkeys'
         OnClick = hotkeys1Click
       end
       object notices1: TMenuItem
-        Caption = #1057#1073#1088#1086#1089' notices'
+        Caption = #1057#1073#1088#1086#1089' '#1090#1072#1073#1083#1080#1094#1099' notices'
         OnClick = notices1Click
+      end
+      object N11: TMenuItem
+        Caption = #1055#1086#1083#1085#1099#1081' '#1089#1073#1088#1086#1089' '#1090#1072#1073#1083#1080#1094
       end
     end
     object buffer1: TMenuItem

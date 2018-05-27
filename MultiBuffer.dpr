@@ -5,7 +5,8 @@ uses
   unitMain in 'unitMain.pas' {main},
   unitSettings in 'unitSettings.pas' {settings},
   unitBuffer in 'unitBuffer.pas' {buffer},
-  unitTimer in 'unitTimer.pas' {fTimer};
+  unitTimer in 'unitTimer.pas' {fTimer},
+  unitDebug in 'unitDebug.pas' {debug};
 
 {$R *.res}
 
@@ -17,6 +18,7 @@ begin
   Application.CreateForm(Tsettings, settings);
   Application.CreateForm(Tbuffer, buffer);
   Application.CreateForm(TfTimer, fTimer);
+  Application.CreateForm(Tdebug, debug);
   unitMain.main.pageInitSQL(unitSettings.settings.numberPage—urrent);
   buffer.FormStyle:=fsStayOnTop;
   main.N5.Checked:=true;
