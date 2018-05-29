@@ -6460,6 +6460,7 @@ object main: Tmain
       end
       object N11: TMenuItem
         Caption = #1055#1086#1083#1085#1099#1081' '#1089#1073#1088#1086#1089' '#1090#1072#1073#1083#1080#1094
+        OnClick = N11Click
       end
     end
     object buffer1: TMenuItem

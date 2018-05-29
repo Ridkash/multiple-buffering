@@ -96,6 +96,7 @@ begin
   if settings.noticeTimer.Enabled then begin
  settings.timerIsActive.Caption := 'start';
  settings.noticeTimer.Enabled := false;
+
 end else begin
 
  settings.timerIsActive.Caption := 'stop';

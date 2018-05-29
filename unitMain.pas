@@ -163,6 +163,7 @@ TRecHotKey = Record
     procedure hotkeys1Click(Sender: TObject);
     procedure notices1Click(Sender: TObject);
     procedure timeUseClick(Sender: TObject);
+    procedure N11Click(Sender: TObject);
 
 
   private
@@ -235,10 +236,10 @@ uses unitTimer, unitDebug;
 procedure TMain.settingsSave();
 var tmp :string;
 begin
-log('settings.EditNumberMaxPage.Text: '+settings.EditNumberMaxPage.Text);
+//log('settings.EditNumberMaxPage.Text: '+settings.EditNumberMaxPage.Text);
     main.numberPageMax:=strtoint(settings.EditNumberMaxPage.Text);
     main.cmdSql(1,'update settings SET value='+inttostr(main.numberPageMax)+' where param="numberPageMax"',tmp);
-log('main.numberPageCurrent: ' + inttostr(main.numberPageCurrent));
+//log('main.numberPageCurrent: ' + inttostr(main.numberPageCurrent));
     main.pageInitSQL(main.numberPageCurrent);
 
     main.cmdSql(1,'update settings SET value='+trim(settings.timerAllHours.Text)+' where param="hoursDayWorkComplited"',tmp);
@@ -247,7 +248,6 @@ log('main.numberPageCurrent: ' + inttostr(main.numberPageCurrent));
     main.cmdSql(1,'update settings SET value='+trim(settings.timerUpdate.Text)+' where param="secTimerUpdate"',tmp);
 
     if settings.noticeTimer.Enabled then tmp:='1' else tmp:='0';
-log('tmp: '+tmp);
     main.cmdSql(1,'update settings SET value='+trim(tmp)+' where param="noticeTimeIsActiveOnLast"',tmp);
 
 
@@ -766,6 +766,8 @@ begin
 
       //Формирую title
       //main.titleItems.Items Начинается запись с нуля, тут четко все!
+
+
       for i := 1 to main.numberPageMax do begin
         main.cmdSql(0,'select t.title from titles t where t.rowid='+inttostr(i)+';',str);
         main.titleItems.Items[i-1]:=str;
@@ -1014,6 +1016,11 @@ end;
 
 procedure Tmain.followingPageClick(Sender: TObject);
 begin
+  if buffer.Visible then buffer.Show else begin
+    buffer.Visible:=true;
+    buffer.Show;
+  end;
+
   if (main.numberPageMax=strtoint(pageNumber.Caption)) then pageNumber.Caption:='1'
     else pageNumber.Caption := inttostr(strtoint(pageNumber.Caption)+1);
 
@@ -1026,6 +1033,11 @@ begin
 end;
 procedure Tmain.previousPageClick(Sender: TObject);
 begin
+  if buffer.Visible then buffer.Show else begin
+    buffer.Visible:=true;
+    buffer.Show;
+  end;
+
 if (strtoint(pageNumber.Caption)=1) then pageNumber.Caption := inttostr(main.numberPageMax)
   else pageNumber.Caption := inttostr(strtoint(pageNumber.Caption)-1);
   pageInitSql(strtoint(main.pageNumber.Caption));
@@ -1085,7 +1097,7 @@ begin
   status.Panels[1].text:='инициализация данных...';
   numberPageMax := 99;    // Число страниц (по умолчанию)
   numberPageCurrent := 1; // Текущая страница
-  currentVersion:='0.10.0';
+  currentVersion:='0.10.1';
 
 
   status.Panels[0].text:='';
@@ -1461,6 +1473,12 @@ end;
 procedure Tmain.hotkeys1Click(Sender: TObject);
 begin
 main.dbCreateTable(3);
+end;
+
+procedure Tmain.N11Click(Sender: TObject);
+var i:word;
+begin
+    for i := 1 to 5 do main.dbCreateTable(i);
 end;
 
 procedure Tmain.N2Click(Sender: TObject);
