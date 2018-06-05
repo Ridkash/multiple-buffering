@@ -105,6 +105,8 @@ TRecHotKey = Record
     hotkeys1: TMenuItem;
     notices1: TMenuItem;
     N11: TMenuItem;
+    DebugCheack: TMenuItem;
+    bdCheack: TMenuItem;
     procedure unRegAtom();
     procedure addBuferIsMemo(item,note :Tmemo);
     procedure FormCreate(Sender: TObject);
@@ -164,6 +166,8 @@ TRecHotKey = Record
     procedure notices1Click(Sender: TObject);
     procedure timeUseClick(Sender: TObject);
     procedure N11Click(Sender: TObject);
+    procedure DebugCheackClick(Sender: TObject);
+    procedure bdCheackClick(Sender: TObject);
 
 
   private
@@ -178,17 +182,20 @@ TRecHotKey = Record
   public
     { Public declarations }
 //    numberPageMax:word;      // число страниц копипаста по умолчанию 99 страниц переменная равна 99;
-    bufferG:string;
     bashSpace : string;
     AlarmON: string;
     tmp: string;
     tmpInt : integer;
-    numberPageCurrent:word;  // Текущая страница
+//    numberPageCurrent:word;  // Текущая страница
     noticeAlarmNumActive:word;
     shortCutKey: integer;
     allNumShortcuts:word;
     numberPageMax:word;
+    dbConnect: boolean;
     massHot: Array[0..200] of TrecHotkey;
+    dbName : string;
+    function dbConnectCheacking(): boolean;
+    procedure statusBottom(s1,s2:string);
     procedure settingsSave();
     procedure cmdSql( cmd :word; sql:string; var res:string);
     procedure syncDbApp();
@@ -232,7 +239,23 @@ uses unitTimer, unitDebug;
 //     then raise EConvertError.Create('"'+Value+'" is not within range of Cardinal data type'); //this msg should not end with dot!
 //  Result := i6;
 //end;
+function TMain.dbConnectCheacking(): boolean;
+begin
+  if main.dbConnect then begin
+    log('main.dbConnect: TRUE');
+  end else begin
+    main.statusBottom('','');
+    log('main.dbConnect: FALSE');
+    main.statusBottom('БД НЕ ПОДКЛЮЧЕНА','');
+  end;
+  result:= main.dbConnect;
+end;
+procedure TMain.statusBottom(s1,s2: string);
+begin
+    status.Panels[0].text:=s1;
+    status.Panels[1].text:=s2;
 
+end;
 procedure TMain.settingsSave();
 var tmp :string;
 begin
@@ -240,7 +263,7 @@ begin
     main.numberPageMax:=strtoint(settings.EditNumberMaxPage.Text);
     main.cmdSql(1,'update settings SET value='+inttostr(main.numberPageMax)+' where param="numberPageMax"',tmp);
 //log('main.numberPageCurrent: ' + inttostr(main.numberPageCurrent));
-    main.pageInitSQL(main.numberPageCurrent);
+    main.pageInitSQL( settings.numberPageСurrent);
 
     main.cmdSql(1,'update settings SET value='+trim(settings.timerAllHours.Text)+' where param="hoursDayWorkComplited"',tmp);
     main.cmdSql(1,'update settings SET value='+trim(settings.timerAllClose.Text)+' where param="numberDayWorkComplited"',tmp);
@@ -303,9 +326,17 @@ end;
 procedure Tmain.syncDbHotKey();
 var i:word;
 begin
+//  GLOBALS
+// allNumShortcuts - Всего hotkeys
+//
+//
 //SELECT COUNT(*) FROM table
+settings.hotkeyAllNum.Caption:='1';
+settings.hotKeyCurient.Caption:='1';
+
 main.cmdSql(0,'SELECT COUNT(*) FROM shortcuts',main.tmp);
 allNumShortcuts:= strtoint(main.tmp);
+settings.hotkeyAllNum.Caption:=tmp;
 
 for i := 1 to allNumShortcuts do begin
   main.cmdSql(0,'select s.shortcut from shortcuts s where s.rowid='+inttostr(i)+';',tmp);
@@ -315,14 +346,16 @@ for i := 1 to allNumShortcuts do begin
   massHot[i+19].idKey := GlobalAddAtom(PWideChar(WideString('Hotkey_C_' + inttostr(i+19))));
   RegisterHotKey(Handle, massHot[i+19].idKey, modUse, StrToUInt(massHot[i+19].VK));
 end;
-
+settings.initHotkey(strtoint(settings.hotKeyCurient.Caption));
 
 end;
 
 procedure Tmain.log(addStr:string);
 begin
-  if not debug.Visible then debug.Show;
-  debug.memo.Lines.Add(addStr);
+  if main.DebugCheack.Checked then begin
+    if not debug.Visible then debug.Show;
+    debug.memo.Lines.Add(addStr);
+  end else
 end;
 procedure Tmain.addGlobal(var Msg: TWMHotKey);
 var
@@ -486,31 +519,28 @@ procedure Tmain.dbCreateTable(tableNum:word);
 //tableNum=3 - shortcuts
 //tableNum=4 - buffers
 //tableNum=5 - titles
-
-
+var i : word;
 begin
+log('tableNum: '+inttostr(tableNum));
 
 case tableNum of
   1 : begin
-     Try
-
-      main.cmdSql(1,'DELETE FROM notices;',tmp);
-      main.cmdSql(1,'drop table notices;',tmp);
-
-     finally
-     showmessage('OK!');
+       try
+        main.cmdSql(1,'drop table notices;',tmp);
+       except
+       main.statusBottom('','таблица notices не существует');
+     End;
      cmdSql(1,'CREATE TABLE [notices](  [time] TEXT,  [title] TEXT,  [body] TEXT,  [status] INTEGER,    [idrecord] INTEGER PRIMARY KEY AUTOINCREMENT);',tmp);
-    End;
   end;
 
   2 : begin
-     Try
+      try
+        main.cmdSql(1,'drop table settings;',tmp);
+      except
 
-      main.cmdSql(1,'DELETE FROM settings;',tmp);
-      main.cmdSql(1,'drop table settings;',tmp);
-
+     End;
       cmdSql(1,'CREATE TABLE settings (param text,value text);',tmp);
-      cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageLast","'+inttostr(numberPageCurrent)+'");',tmp);
+      cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageLast","'+inttostr( settings.numberPageСurrent)+'");',tmp);
       cmdSql(1,'insert INTO settings (param,value) VALUES ("numberPageMax","'+inttostr(numberPageMax)+'");',tmp);
       cmdSql(1,'insert INTO settings (param,value) VALUES ("hoursDayWorkComplited","12");',tmp);
       cmdSql(1,'insert INTO settings (param,value) VALUES ("numberDayWorkComplited","20");',tmp);
@@ -518,46 +548,43 @@ case tableNum of
       cmdSql(1,'insert INTO settings (param,value) VALUES ("secTimerUpdate","2");',tmp);
       cmdSql(1,'insert INTO settings (param,value) VALUES ("BashCheack","0");',tmp);
       cmdSql(1,'insert INTO settings (param,value) VALUES ("noticeTimeIsActiveOnLast","0");',tmp);
-
-     finally
-     showmessage('OK!');
-    End;
   end;
   3 : begin
-     Try
-
-      main.cmdSql(1,'DELETE FROM shortcuts;',tmp);
-      main.cmdSql(1,'drop table shortcuts;',tmp);
+        try
+          main.cmdSql(1,'drop table shortcuts;',tmp);
+        except
+          log('Таблицы shortcuts не было ');
+        end;
 
      cmdSql(1,'CREATE TABLE shortcuts (shortcut text,cmd text);',tmp);
-     finally
-     showmessage('OK!');
-    End;
   end;
   4 : begin
-     Try
+      try
+        main.cmdSql(1,'drop table buffers;',tmp);
+      except
 
-      main.cmdSql(1,'DELETE FROM buffers;',tmp);
-      main.cmdSql(1,'drop table buffers;',tmp);
+     End;
 
-     cmdSql(1,'CREATE TABLE buffers (item text,notice text);',tmp);
-     finally
-     showmessage('OK!');
-    End;
+    cmdSql(1,'CREATE TABLE buffers (item text,notice text);',tmp);
+    for i := 1 to numberPageMax*10+10 do cmdSql(1,'INSERT INTO buffers (item,notice) VALUES ("item '+inttostr(i)+'", "notice '+inttostr(i)+'");',tmp);
   end;
   5 : begin
-     Try
+       try
+         main.cmdSql(1,'drop table titles;',tmp);
+       except
 
-      main.cmdSql(1,'DELETE FROM titles;',tmp);
-      main.cmdSql(1,'drop table titles;',tmp);
-
+     End;
      cmdSql(1,'CREATE TABLE titles (title text);',tmp);
-     finally
-     showmessage('OK!');
-    End;
+     for i := 1 to numberPageMax do cmdSql(1,'INSERT INTO titles (title) VALUES ("title '+ inttostr(i) +'");',tmp);
   end;
 
 end;
+end;
+
+procedure Tmain.DebugCheackClick(Sender: TObject);
+begin
+if main.DebugCheack.Checked then
+main.DebugCheack.Checked:=false else main.DebugCheack.Checked:=true;
 end;
 
 procedure Tmain.notice(AlarmON, time,title,body:string);
@@ -757,6 +784,10 @@ procedure TMain.pageInitSQL(needPageNumber:word);
   bufferCount :word;//с этой позиции будем читать
   str,tmp:string;
 begin
+if main.dbConnectCheacking then begin
+
+
+
 
       // инициализация переменных
       //title 0...
@@ -777,9 +808,7 @@ begin
 
       bufferCount:=strtoint(main.pageNumber.Caption) * 10;
 
-      //читаю горячую клавишу
-      main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="g"',tmp);
-      main.bufferG:= tmp;
+
 
       //пишу title
       main.cmdSql(0,'select t.rowid from titles t where t.rowid = '+inttostr(needPageNumber)+';',str);
@@ -809,6 +838,7 @@ begin
       main.cmdSql(0,'select b.notice from buffers b where b.rowid = '+inttostr(bufferCount+9)+';',str); main.note9.Text:= main.trimoutSql(str);
 
       main.status.Panels[0].Text:='ok';
+end;
 end;
 
  procedure goUp(a:word);
@@ -1016,6 +1046,8 @@ end;
 
 procedure Tmain.followingPageClick(Sender: TObject);
 begin
+
+
   if buffer.Visible then buffer.Show else begin
     buffer.Visible:=true;
     buffer.Show;
@@ -1027,12 +1059,13 @@ begin
   pageInitSql(strtoint(main.pageNumber.Caption));
   buffer.StatusBar1.Panels[1].Text:=main.titleItems.Text;
   buffer.StatusBar1.Panels[0].Text:='page: '+main.pageNumber.Caption;
-  main.numberPageCurrent:=strtoint(main.pageNumber.Caption);
+  settings.numberPageСurrent:=strtoint(main.pageNumber.Caption);
 
 //  showmessage('->'+pageNumber.Caption+'mod'+inttostr(strtoint(pageNumber.Caption) div 10));
 end;
 procedure Tmain.previousPageClick(Sender: TObject);
 begin
+
   if buffer.Visible then buffer.Show else begin
     buffer.Visible:=true;
     buffer.Show;
@@ -1043,7 +1076,8 @@ if (strtoint(pageNumber.Caption)=1) then pageNumber.Caption := inttostr(main.num
   pageInitSql(strtoint(main.pageNumber.Caption));
   buffer.StatusBar1.Panels[1].Text:=main.titleItems.Text;
   buffer.StatusBar1.Panels[0].Text:='page: '+main.pageNumber.Caption;
-  main.numberPageCurrent:=strtoint(main.pageNumber.Caption);
+ settings.numberPageСurrent:=strtoint(main.pageNumber.Caption);
+
 
 end;
 
@@ -1080,32 +1114,19 @@ const
   VK_following = $45;
 
 var
-//sqlite
-
-
-//////////
-  initNumberPageCurrent,i: word;
-//  a,b,
+  i: word;
   tmp: string;
-//  fileSettingsName:string;
-  dbName : string;
-//  names: TStringList;
-
 begin
-
   //Инициализация переменных
-  status.Panels[1].text:='инициализация данных...';
-  numberPageMax := 99;    // Число страниц (по умолчанию)
-  numberPageCurrent := 1; // Текущая страница
-  currentVersion:='0.10.1';
-
-
-  status.Panels[0].text:='';
+  main.dbConnect:=false;
+  main.statusBottom('','инициализация данных...');
+  currentVersion:='0.11.1';
+  main.statusBottom('','');
 
 // MOD_ALT = 1;
 // MOD_CONTROL = 2;
   modUse := 2;
-//  fileSettingsName := GetCurrentDir + '\settings.ini';
+
   dbName:=GetCurrentDir + '\base.db';
   main.BufferConnection.Params.Add('Database='+dbName);
   main.Caption := main.Caption + ' ' + currentVersion;
@@ -1123,31 +1144,24 @@ begin
   // DELETE FROM Customers
   //  WHERE CustomerName='Alfreds Futterkiste';
 
-  // Проверка на существование base.db в каталоге где запускается приложение если не существует инициализируем таблицу.
+// Проверим существования базы если есть подключим
 
-  if not FileExists(dbName) then begin
-    //создаю бд и записываю рандомные значения
-    showmessage('Буду сосздавать базу (минутку после нажатия ОК) ');
-    main.BufferConnection.Connected:=true;
+if FileExists(main.dbName) then begin
+  main.BufferConnection.Connected:=true;
+  main.dbConnect:=true;
+end;
 
-    for i := 1 to 5 do main.dbCreateTable(i);
-
-
-
-    for i := 1 to numberPageMax do cmdSql(1,'INSERT INTO titles (title) VALUES ("title '+ inttostr(i) +'");',tmp);
-    for i := 1 to numberPageMax*10+10 do cmdSql(1,'INSERT INTO buffers (item,notice) VALUES ("item '+inttostr(i)+'", "notice '+inttostr(i)+'");',tmp);
-
-  end else begin
-
-  end;
-
- cmdSql(0,'select s.value from settings s where s.param = "numberPageLast";',tmp); initNumberPageCurrent:=strtoint(tmp);
- cmdSql(0,'select s.value from settings s where s.param = "numberPageMax";',tmp); numberPageMax:=strtoint(tmp);
+//if main.dbConnect then begin
+// cmdSql(0,'select s.value from settings s where s.param = "numberPageLast";',tmp);
+// main.numberPageCurrent:=strtoint(tmp);
+// cmdSql(0,'select s.value from settings s where s.param = "numberPageMax";',tmp);
+// numberPageMax:=strtoint(tmp);
+//end;
 
 //**************************************************//
 // Register Hotkey Ctrl + 1
 //**************************************************//
-  // сначала запишу клавиши 0 - 9
+// сначала запишу клавиши 0 - 9
   for i := 0 to 9 do begin
     massHot[i].idKey := GlobalAddAtom(PWideChar(WideString('Hotkey_C_' + inttostr(i))));
     massHot[i].VK:= PWideChar(WideString('$3'+inttostr(i)));
@@ -1162,48 +1176,8 @@ begin
   RegisterHotKey(Handle, massHot[10].idKey, modUse, StrToUInt(massHot[10].VK));
 ///
 
-
-
 //************
-
-main.syncDbHotKey();
-
-//  id_C_0 := GlobalAddAtom('Hotkey_C_0');
-//  RegisterHotKey(Handle, id_C_0, modUse, VK_0);
-//
-//  id_C_1 := GlobalAddAtom('Hotkey_C_1');
-//  RegisterHotKey(Handle, id_C_1, modUse, VK_1);
-//
-//  id_C_2 := GlobalAddAtom('Hotkey_C_2');
-//  RegisterHotKey(Handle, id_C_2, modUse, VK_2);
-//
-//  id_C_3 := GlobalAddAtom('Hotkey_C_3');
-//  RegisterHotKey(Handle, id_C_3, modUse, VK_3);
-//
-//  id_C_4 := GlobalAddAtom('Hotkey_C_4'); RegisterHotKey(Handle, id_C_4, modUse, VK_4);
-//  id_C_5 := GlobalAddAtom('Hotkey_C_5'); RegisterHotKey(Handle, id_C_5, modUse, VK_5);
-//  id_C_6 := GlobalAddAtom('Hotkey_C_6'); RegisterHotKey(Handle, id_C_6, modUse, VK_6);
-//  id_C_7 := GlobalAddAtom('Hotkey_C_7'); RegisterHotKey(Handle, id_C_7, modUse, VK_7);
-//  id_C_8 := GlobalAddAtom('Hotkey_C_8'); RegisterHotKey(Handle, id_C_8, modUse, VK_8);
-//  id_C_9 := GlobalAddAtom('Hotkey_C_9'); RegisterHotKey(Handle, id_C_9, modUse, VK_9);
-
-//  id_C_T := GlobalAddAtom('Hotkey_C_T'); RegisterHotKey(Handle, id_C_T, modUse, VK_T);
-//  id_C_G := GlobalAddAtom('Hotkey_C_G'); RegisterHotKey(Handle, id_C_G, modUse, VK_G);
-//  id_C_S := GlobalAddAtom('Hotkey_C_S'); RegisterHotKey(Handle, id_C_S, modUse, VK_S);
-//
-//  id_C_SB := GlobalAddAtom('Hotkey_C_SB'); RegisterHotKey(Handle, id_C_SB, modUse, VK_SB);
-//
-//  id_C_l := GlobalAddAtom('Hotkey_C_l'); RegisterHotKey(Handle, id_C_l, modUse, VK_k);
-//  id_C_p := GlobalAddAtom('Hotkey_C_p'); RegisterHotKey(Handle, id_C_p, modUse, VK_p);
-//  id_C_m := GlobalAddAtom('Hotkey_C_m'); RegisterHotKey(Handle, id_C_m, modUse, VK_m);
-
-
-
-
-
-//
- status.Panels[1].Text:='';
-
+//if main.dbConnect then main.syncDbHotKey();
 end;
 
 
@@ -1211,11 +1185,10 @@ end;
 procedure Tmain.FormDestroy(Sender: TObject);
 begin
 unRegAtom();
-//ini.Free;
 end;
 procedure Tmain.FormPaint(Sender: TObject);
 begin
-  main.status.Panels[0].text:='';
+//  main.status.Panels[0].text:='';
 end;
 
 procedure Tmain.FormResize(Sender: TObject);
@@ -1481,6 +1454,26 @@ begin
     for i := 1 to 5 do main.dbCreateTable(i);
 end;
 
+procedure Tmain.bdCheackClick(Sender: TObject);
+begin
+if main.bdCheack.Checked then begin
+ log('Отключаюсь к БД...');
+ main.bdCheack.Checked:=false;
+ main.dbConnect:=false;
+ main.dbConnectCheacking();
+
+end else begin
+ log('Подключаюсь к БД');
+ main.dbConnect:=true;
+ main.bdCheack.Checked:=true;
+ settings.initSettings();
+ main.dbConnectCheacking();
+
+end;
+
+
+end;
+
 procedure Tmain.N2Click(Sender: TObject);
 begin
     if main.N2.Checked then main.FormStyle:=fsStayOnTop
@@ -1499,8 +1492,6 @@ settings.Show;
 cmdSql(0,'select s.value FROM settings s where s.param="numberPageMax"',tmp);
 settings.EditNumberMaxPage.Text :=trim(tmp);
 
-cmdSql(0,'select s.cmd FROM shortcuts s where s.shortcut="g"',tmp);
-//settings.EditBuferG.Text :=main.trimoutSql(tmp);
 
 end;
 procedure Tmain.N5Click(Sender: TObject);

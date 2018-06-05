@@ -19,11 +19,14 @@ begin
   Application.CreateForm(Tbuffer, buffer);
   Application.CreateForm(TfTimer, fTimer);
   Application.CreateForm(Tdebug, debug);
-  unitMain.main.pageInitSQL(unitSettings.settings.numberPageÑurrent);
+  if unitMain.main.dbConnect then unitMain.main.pageInitSQL(unitSettings.settings.numberPageÑurrent) else
+    unitMain.main.statusBottom('ÁÄ ÍÅ ÏÎÄÊËŞ×ÅÍÀ1','');
+
   buffer.FormStyle:=fsStayOnTop;
   main.N5.Checked:=true;
   buffer.Show;
   ftimer.Hide;
+
 
   Application.Run;
 

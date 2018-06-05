@@ -1,6 +1,6 @@
 object settings: Tsettings
-  Left = 0
-  Top = 0
+  Left = 618
+  Top = 370
   BorderStyle = bsDialog
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
   ClientHeight = 354
@@ -12,7 +12,7 @@ object settings: Tsettings
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poMainFormCenter
+  Position = poDesigned
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -47,7 +47,7 @@ object settings: Tsettings
     Top = 0
     Width = 385
     Height = 114
-    Caption = ' '
+    Caption = ' '#1044#1086#1073#1072#1074#1080#1090#1100' '#1085#1072#1087#1086#1084#1080#1085#1072#1085#1080#1077
     TabOrder = 2
     object noticeNumberCurrent: TLabel
       Left = 2
@@ -115,12 +115,12 @@ object settings: Tsettings
       OnClick = noticeNumberFollowingClick
     end
     object noticeChange: TButton
-      Left = 247
+      Left = 258
       Top = 50
-      Width = 75
+      Width = 64
       Height = 25
       Cursor = crHandPoint
-      Caption = #1080#1079#1084#1077#1085#1080#1090#1100
+      Caption = #1048#1079#1084#1077#1085#1080#1090#1100
       TabOrder = 2
       OnClick = noticeChangeClick
     end
@@ -129,6 +129,13 @@ object settings: Tsettings
       Top = 23
       Width = 121
       Height = 21
+      Margins.Left = 0
+      Margins.Top = 0
+      Margins.Right = 0
+      Margins.Bottom = 0
+      AutoSize = False
+      Color = cl3DLight
+      ReadOnly = True
       TabOrder = 3
       Text = #1058#1077#1083#1086
     end
@@ -137,6 +144,9 @@ object settings: Tsettings
       Top = 23
       Width = 57
       Height = 21
+      AutoSize = False
+      Color = cl3DLight
+      ReadOnly = True
       TabOrder = 4
       Text = #1042#1088#1077#1084#1103
     end
@@ -145,6 +155,9 @@ object settings: Tsettings
       Top = 23
       Width = 121
       Height = 21
+      AutoSize = False
+      Color = cl3DLight
+      ReadOnly = True
       TabOrder = 5
       Text = #1064#1072#1087#1082#1072
     end
@@ -169,9 +182,9 @@ object settings: Tsettings
       OnClick = noticeDeleteClick
     end
     object timerIsActive: TButton
-      Left = 247
+      Left = 258
       Top = 81
-      Width = 75
+      Width = 64
       Height = 25
       Caption = 'TIMER'
       TabOrder = 8
@@ -195,27 +208,66 @@ object settings: Tsettings
     Width = 736
     Height = 22
     Panels = <>
-    ExplicitTop = 671
-    ExplicitWidth = 662
   end
   object hotKeyGroup: TGroupBox
     Left = 9
     Top = 166
-    Width = 264
+    Width = 288
     Height = 147
     Caption = #1043#1086#1088#1103#1095#1080#1077' '#1082#1085#1086#1087#1082#1080':'
     TabOrder = 5
-    object Label2: TLabel
+    object hotKeyCaption: TLabel
       Left = 13
       Top = 23
       Width = 98
       Height = 13
       Caption = #1055#1086' '#1085#1072#1078#1072#1090#1080#1102' '#1085#1072' * +'
     end
-    object toAddMe: TMemo
+    object hotKeyCurient: TLabel
+      Left = 38
+      Top = 118
+      Width = 22
+      Height = 25
+      Caption = '11'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -21
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object hotkeyAllNum: TLabel
+      Left = 78
+      Top = 118
+      Width = 22
+      Height = 25
+      BiDiMode = bdRightToLeft
+      Caption = '10'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -21
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentBiDiMode = False
+      ParentFont = False
+    end
+    object Label2: TLabel
+      Left = 66
+      Top = 118
+      Width = 8
+      Height = 25
+      Caption = '/'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -21
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object hotkeyMemo: TMemo
       Left = 13
       Top = 56
-      Width = 221
+      Width = 252
       Height = 56
       TabOrder = 0
     end
@@ -231,13 +283,49 @@ object settings: Tsettings
       OnChange = HotKey1Change
     end
     object addHotkeyButton: TButton
-      Left = 169
+      Left = 133
       Top = 118
-      Width = 65
+      Width = 67
       Height = 25
+      Cursor = crHandPoint
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       TabOrder = 2
       OnClick = addHotkeyButtonClick
+    end
+    object Button1: TButton
+      Left = 13
+      Top = 118
+      Width = 25
+      Height = 25
+      Cursor = crHandPoint
+      Caption = '<'
+      TabOrder = 3
+    end
+    object Button2: TButton
+      Left = 106
+      Top = 118
+      Width = 21
+      Height = 25
+      Cursor = crHandPoint
+      Caption = '>'
+      TabOrder = 4
+    end
+    object Button3: TButton
+      Left = 206
+      Top = 118
+      Width = 59
+      Height = 25
+      Caption = #1048#1079#1084#1077#1085#1090#1100
+      TabOrder = 5
+    end
+    object Button4: TButton
+      Left = 204
+      Top = 25
+      Width = 61
+      Height = 25
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+      TabOrder = 6
+      Visible = False
     end
   end
   object gTimer: TGroupBox

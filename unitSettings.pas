@@ -47,13 +47,20 @@ type
     HotKey1: THotKey;
     StatusBar1: TStatusBar;
     Splitter1: TSplitter;
-    Label2: TLabel;
-    toAddMe: TMemo;
+    hotKeyCaption: TLabel;
+    hotkeyMemo: TMemo;
     addHotkeyButton: TButton;
     hotKeyGroup: TGroupBox;
+    hotKeyCurient: TLabel;
+    hotkeyAllNum: TLabel;
+    Label2: TLabel;
+    Button1: TButton;
+    Button2: TButton;
+    Button3: TButton;
+    Button4: TButton;
+
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure noticeAddClick(Sender: TObject);
     procedure noticeClearClick(Sender: TObject);
     procedure noticeInit(numCurrient:integer);
@@ -65,6 +72,7 @@ type
     procedure noticeChangeClick(Sender: TObject);
     procedure HotKey1Change(Sender: TObject);
     procedure addHotkeyButtonClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
 
   private
     { Private declarations }
@@ -81,6 +89,8 @@ type
     alarmNumPage: word;
     alarmID: word; // отображает id в базе текущей формы notice
     procedure activeTimer();
+    procedure initSettings();
+    procedure initHotkey(i:word);
   end;
 
 var
@@ -91,6 +101,107 @@ implementation
 {$R *.dfm}
 
 uses unitMain, unitBuffer;
+procedure Tsettings.initHotkey(i: Word);
+begin
+main.cmdSql(0,'SELECT s.cmd FROM shortcuts s WHERE rowid="'+inttostr(i)+'"',main.tmp);
+main.log('В hotkey:'+main.tmp);
+settings.hotkeyMemo.Text:=trim(main.tmp);
+end;
+procedure Tsettings.initSettings();
+var
+  res:string;
+  i:word;
+begin
+main.log('procedure Tsettings.initSettings();');
+  // Проверка на существование base.db в каталоге где запускается приложение если не существует инициализируем таблицу.
+if not FileExists(main.dbName) then begin
+  main.BufferConnection.Connected:=true;
+  main.dbConnect:=true;
+  for i := 1 to 5 do main.dbCreateTable(i);
+  main.log('Создал новую базу!');
+end;
+main.log('БД существует... идем дальше!');
+
+alarmNumPage:=1;
+
+  main.cmdSql(0,'select s.value FROM settings s WHERE param="numberPageMax";',res);
+  main.numberPageMax:=strtoint(res);
+
+  main.cmdSql(0,'select s.value FROM settings s WHERE param="numberPageLast";',res);
+  settings.numberPageСurrent:=strtoint(res);
+
+  main.cmdSql(0,'select s.value FROM settings s WHERE param="hoursDayWorkComplited";',res);
+  settings.timerAllHours.Text:=res;
+
+  main.cmdSql(0,'select s.value FROM settings s WHERE param="numberDayWorkComplited";',res);
+  settings.timerAllClose.Text:=res;
+
+  main.cmdSql(0,'select s.value FROM settings s WHERE param="numberDayWorkParts";',res);
+  settings.timerCorrectionDay.Text:=res;
+
+  main.cmdSql(0,'select s.value FROM settings s WHERE param="secTimerUpdate";',res);
+  settings.timerUpdate.Text:=res;
+
+
+
+  main.cmdSql(0,'select s.value FROM settings s WHERE param="BashCheack";',res);
+
+         main.cmdSql(0,'select s.value FROM settings s WHERE param="noticeTimeIsActiveOnLast";',res);
+        if res='1' then  settings.activeTimer();
+
+
+
+
+
+
+//  if strtoint(res)=1 then begin
+//    settings.bashCheack.Checked:=true;
+//    main.bashSpace:=' ';
+//  end else begin
+//    settings.bashCheack.Checked:=false;
+//    main.bashSpace:='';
+//  end;
+
+
+
+
+  main.pageInitSQL(settings.numberPageСurrent);
+
+// NoticeSettings init
+//  settings.noticeInitCurrent := 1;
+  settings.alarmNumPage:=1;
+  settings.noticeInit(alarmNumPage);
+ main.log('ENTER: syncDbApp();');
+main.syncDbApp();
+main.log('EXIT: syncDbApp');
+main.log('ENTER: syncDbHotKey');
+main.syncDbHotKey();
+
+end;
+procedure noticeReadOnly(use:boolean);
+begin
+if use then
+begin
+  settings.noticeTime.ReadOnly := true;
+  settings.noticeTitle.ReadOnly := true;
+  settings.noticeBody.ReadOnly := true;
+
+  settings.noticeTime.Color := cl3DLight;
+  settings.noticeTitle.Color := cl3DLight;
+  settings.noticeBody.Color := cl3DLight;
+
+end else begin
+  settings.noticeTime.ReadOnly := false;
+  settings.noticeTitle.ReadOnly := false;
+  settings.noticeBody.ReadOnly := false;
+
+  settings.noticeTime.Color := clMoneyGreen;
+  settings.noticeTitle.Color := clMoneyGreen;
+  settings.noticeBody.Color := clMoneyGreen;
+
+end;
+
+end;
 procedure Tsettings.activeTimer();
 begin
   if settings.noticeTimer.Enabled then begin
@@ -107,20 +218,28 @@ end;
 end;
 
 procedure Tsettings.noticeChangeClick(Sender: TObject);
+var sql:string;
 begin
-//main.cmdSql(1,'UPDATE notices SET time = "'+settings.noticeTime.Text+' "," title = "'+settings.noticeTitle.Text+'"," body = "'+settings.noticeBody.Text+'"," status="1" WHERE idRecord = "'+settings.noticeID.Caption +' "');
+noticereadonly(false);
+if settings.noticeChange.Caption='Изменить' then begin
+  main.log('изменить');
+  settings.noticeChange.Caption:='Сохранить';
+  settings.noticeDelete.Caption :='X';
+end else begin
+  settings.noticeChange.Caption:='Изменить';
+
+  noticereadonly(true);
+  sql:='UPDATE notices SET time = "'+trim(settings.noticeTime.Text)+'",title = "'+trim(settings.noticeTitle.Text)+'",body = "'+trim(settings.noticeBody.Text)+'", status="1" WHERE idRecord = "'+trim(settings.noticeNumberCurrent.Caption) +'"';
+  main.log(sql);
+  main.cmdSql(1,sql,main.tmp);
+end;
+
+
 
 end;
 
 procedure Tsettings.noticeClearClick(Sender: TObject);
 begin
- Try
-    main.cmdSql(1,'DELETE FROM notices;',main.tmp);
-    main.cmdSql(1,'drop table notices;',main.tmp);
- finally
-  main.cmdSql(1,'create table notices (time,title,body);',main.tmp);
- End;
-
 
 showmessage('Успешно сброшена!');
 
@@ -136,6 +255,11 @@ end else begin
   settings.noticeTime.Text :='00:00';
   settings.noticeTitle.Text := '*Заголовок*';
   settings.noticeBody.Text := '*Основной текст*';
+
+  settings.noticeChange.Caption:='Изменить';
+  noticeReadOnly(true);
+
+
 end;
 
 end;
@@ -231,8 +355,8 @@ end;
 
 procedure Tsettings.addHotkeyButtonClick(Sender: TObject);
 begin
-  main.cmdSql(1,'INSERT INTO shortcuts(cmd, shortcut ) VALUES ("'+ settings.toAddMe.Text +'","$'+IntToHex(main.shortCutKey, 2) +'");',main.tmp);
-  settings.toAddMe.Clear;
+  main.cmdSql(1,'INSERT INTO shortcuts(cmd, shortcut ) VALUES ("'+ settings.hotkeyMemo.Text +'","$'+IntToHex(main.shortCutKey, 2) +'");',main.tmp);
+  settings.hotkeyMemo.Clear;
 end;
 
 procedure Tsettings.ButtonCancelClick(Sender: TObject);
@@ -248,67 +372,20 @@ settings.Hide;
 end;
 
 procedure Tsettings.FormCreate(Sender: TObject);
-var
-  res:string;
 begin
-alarmNumPage:=1;
+ alarmNumPage:=1;
+ main.numberPageMax:=99;
+ settings.numberPageСurrent:=1;
+ settings.timerAllHours.Text:='12';
+ settings.timerAllClose.Text:='22';
+ settings.timerCorrectionDay.Text:='4';
+ settings.timerUpdate.Text:='2';
 
-  main.cmdSql(0,'select s.value FROM settings s WHERE param="numberPageMax";',res);
-  main.numberPageMax:=strtoint(res);
+ settings.alarmNumPage:=1;
+if main.dbConnect then settings.noticeInit(1);
 
-  main.cmdSql(0,'select s.value FROM settings s WHERE param="numberPageLast";',res);
-  settings.numberPageСurrent:=strtoint(res);
-
-  main.cmdSql(0,'select s.value FROM settings s WHERE param="hoursDayWorkComplited";',res);
-  settings.timerAllHours.Text:=res;
-
-  main.cmdSql(0,'select s.value FROM settings s WHERE param="numberDayWorkComplited";',res);
-  settings.timerAllClose.Text:=res;
-
-  main.cmdSql(0,'select s.value FROM settings s WHERE param="numberDayWorkParts";',res);
-  settings.timerCorrectionDay.Text:=res;
-
-  main.cmdSql(0,'select s.value FROM settings s WHERE param="secTimerUpdate";',res);
-  settings.timerUpdate.Text:=res;
-
-  main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="g"',res);
-//  settings.EditBuferG.Text:=trim(res);
-//  main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="l"',res);
-//  settings.EditBuferL.Text:=trim(res);
-//  main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="p"',res);
-//  settings.EditBuferP.Text:=trim(res);
-//  main.cmdSql(0,'select s.cmd FROM shortcuts s WHERE shortcut="m"',res);
-//  settings.EditBuferM.Text:=trim(res);
-
-  main.cmdSql(0,'select s.value FROM settings s WHERE param="BashCheack";',res);
-
-         main.cmdSql(0,'select s.value FROM settings s WHERE param="noticeTimeIsActiveOnLast";',res);
-        if res='1' then  settings.activeTimer();
-
-
-
-
-
-
-//  if strtoint(res)=1 then begin
-//    settings.bashCheack.Checked:=true;
-//    main.bashSpace:=' ';
-//  end else begin
-//    settings.bashCheack.Checked:=false;
-//    main.bashSpace:='';
-//  end;
-
-
-
-
-  main.pageInitSQL(settings.numberPageСurrent);
-
-// NoticeSettings init
-//  settings.noticeInitCurrent := 1;
-  settings.alarmNumPage:=1;
-  settings.noticeInit(alarmNumPage);
-
-main.syncDbApp();
+//main.syncDbApp();
+ main.bdCheack.Click;
 end;
 
 procedure Tsettings.HotKey1Change(Sender: TObject);
@@ -325,14 +402,18 @@ if(settings.noticeAdd.Caption='+') then begin
   settings.noticeDelete.Caption :='X';
   settings.noticeTime.Text :=timetostr(time);;
   settings.noticeTitle.Text := '*Заголовок*';
-  settings.noticeBody.Text := '*Основной текст*'
+  settings.noticeBody.Text := '*Основной текст*';
+
+noticeReadOnly(false);
+
 end else begin
 //Начинаем писать в БД
   settings.noticeAdd.Caption:='+';
-    settings.noticeDelete.Caption :='-';
+  settings.noticeDelete.Caption :='-';
   main.cmdSql(1,'insert INTO notices (time,title,body,status) VALUES ("'+settings.noticeTime.Text+'","'+settings.noticeTitle.Text+'","'+settings.noticeBody.Text+'","1");',main.tmp);
   settings.noticeTitle.Text ;
   settings.noticeInit(alarmNumPage);
+  noticeReadOnly(true);
 
 end;
 

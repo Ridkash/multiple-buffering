@@ -1,6 +1,6 @@
 object buffer: Tbuffer
-  Left = 0
-  Top = 0
+  Left = 824
+  Top = 901
   BorderStyle = bsDialog
   Caption = 'buffer'
   ClientHeight = 70
@@ -13,6 +13,7 @@ object buffer: Tbuffer
   Font.Style = []
   FormStyle = fsMDIForm
   OldCreateOrder = False
+  Position = poDesigned
   OnPaint = FormPaint
   PixelsPerInch = 96
   TextHeight = 13

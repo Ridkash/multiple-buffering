@@ -1,6 +1,6 @@
 object main: Tmain
-  Left = 0
-  Top = 0
+  Left = 1500
+  Top = 228
   Caption = 'Multi buffer ver.'
   ClientHeight = 534
   ClientWidth = 306
@@ -5699,7 +5699,7 @@ object main: Tmain
     OnClick = previousPageClick
   end
   object followingPage: TButton
-    Left = 252
+    Left = 248
     Top = 0
     Width = 21
     Height = 21
@@ -5997,30 +5997,6 @@ object main: Tmain
       end
       item
         Width = 150
-      end
-      item
-        Width = 150
-      end
-      item
-        Width = 50
-      end
-      item
-        Width = 50
-      end
-      item
-        Width = 50
-      end
-      item
-        Width = 50
-      end
-      item
-        Width = 50
-      end
-      item
-        Width = 50
-      end
-      item
-        Width = 50
       end>
   end
   object changeTitle: TBitBtn
@@ -6462,9 +6438,17 @@ object main: Tmain
         Caption = #1055#1086#1083#1085#1099#1081' '#1089#1073#1088#1086#1089' '#1090#1072#1073#1083#1080#1094
         OnClick = N11Click
       end
+      object DebugCheack: TMenuItem
+        Caption = 'Debug'
+        OnClick = DebugCheackClick
+      end
     end
     object buffer1: TMenuItem
       Caption = #1073#1091#1092#1077#1088
+      object bdCheack: TMenuItem
+        Caption = #1055#1086#1076#1082#1083#1102#1095#1080#1090#1089#1103' '#1082' '#1041#1044
+        OnClick = bdCheackClick
+      end
       object N7: TMenuItem
         Caption = #1087#1086#1082#1072#1079#1072#1090#1100
         OnClick = N7Click
