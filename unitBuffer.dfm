@@ -1,6 +1,6 @@
 object buffer: Tbuffer
-  Left = 824
-  Top = 901
+  Left = 0
+  Top = 0
   BorderStyle = bsDialog
   Caption = 'buffer'
   ClientHeight = 70

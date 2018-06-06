@@ -1,6 +1,6 @@
 object main: Tmain
-  Left = 1500
-  Top = 228
+  Left = 0
+  Top = 0
   Caption = 'Multi buffer ver.'
   ClientHeight = 534
   ClientWidth = 306
@@ -6406,6 +6406,7 @@ object main: Tmain
       end
       object N10: TMenuItem
         Caption = #1058#1072#1081#1084#1077#1088
+        OnClick = N10Click
       end
       object N2: TMenuItem
         AutoCheck = True
@@ -6449,18 +6450,14 @@ object main: Tmain
         Caption = #1055#1086#1076#1082#1083#1102#1095#1080#1090#1089#1103' '#1082' '#1041#1044
         OnClick = bdCheackClick
       end
-      object N7: TMenuItem
+      object showBufferCheack: TMenuItem
         Caption = #1087#1086#1082#1072#1079#1072#1090#1100
-        OnClick = N7Click
+        OnClick = showBufferCheackClick
       end
       object N5: TMenuItem
         AutoCheck = True
         Caption = #1087#1086#1074#1077#1088#1093' '#1086#1089#1090#1072#1083#1100#1085#1099#1093' '#1086#1082#1086#1085
         OnClick = N5Click
-      end
-      object N6: TMenuItem
-        Caption = #1079#1072#1082#1088#1099#1090#1100
-        OnClick = N6Click
       end
     end
     object N3: TMenuItem

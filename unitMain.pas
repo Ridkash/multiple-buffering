@@ -79,8 +79,7 @@ TRecHotKey = Record
     status: TStatusBar;
     buffer1: TMenuItem;
     N5: TMenuItem;
-    N6: TMenuItem;
-    N7: TMenuItem;
+    showBufferCheack: TMenuItem;
     copyright: TLabel;
     changeTitle: TBitBtn;
     goUp1: TBitBtn;
@@ -139,9 +138,8 @@ TRecHotKey = Record
     procedure FormDestroy(Sender: TObject);
     procedure N4Click(Sender: TObject);
     procedure N2Click(Sender: TObject);
-    procedure N6Click(Sender: TObject);
     procedure N5Click(Sender: TObject);
-    procedure N7Click(Sender: TObject);
+    procedure showBufferCheackClick(Sender: TObject);
     procedure N8Click(Sender: TObject);
     procedure changeTitleClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -168,6 +166,8 @@ TRecHotKey = Record
     procedure N11Click(Sender: TObject);
     procedure DebugCheackClick(Sender: TObject);
     procedure bdCheackClick(Sender: TObject);
+    procedure N6Click(Sender: TObject);
+    procedure N10Click(Sender: TObject);
 
 
   private
@@ -353,9 +353,13 @@ end;
 procedure Tmain.log(addStr:string);
 begin
   if main.DebugCheack.Checked then begin
-    if not debug.Visible then debug.Show;
+
+    if debug.Visible then begin
+     debug.Show;
+    end;
+
     debug.memo.Lines.Add(addStr);
-  end else
+  end
 end;
 procedure Tmain.addGlobal(var Msg: TWMHotKey);
 var
@@ -521,7 +525,7 @@ procedure Tmain.dbCreateTable(tableNum:word);
 //tableNum=5 - titles
 var i : word;
 begin
-log('tableNum: '+inttostr(tableNum));
+log('Создание таблицы...: '+inttostr(tableNum));
 
 case tableNum of
   1 : begin
@@ -566,7 +570,11 @@ case tableNum of
      End;
 
     cmdSql(1,'CREATE TABLE buffers (item text,notice text);',tmp);
-    for i := 1 to numberPageMax*10+10 do cmdSql(1,'INSERT INTO buffers (item,notice) VALUES ("item '+inttostr(i)+'", "notice '+inttostr(i)+'");',tmp);
+    for i := 1 to numberPageMax*10+10 do begin
+      cmdSql(1,'INSERT INTO buffers (item,notice) VALUES ("item '+inttostr(i)+'", "notice '+inttostr(i)+'");',tmp);
+      log('Идет запись... '+inttostr(i)+'/'+inttostr(numberPageMax*10+10));
+      main.statusBottom('Создание таблиц...', inttostr(i)+'/'+inttostr(numberPageMax*10+10));
+    end;
   end;
   5 : begin
        try
@@ -1048,9 +1056,13 @@ procedure Tmain.followingPageClick(Sender: TObject);
 begin
 
 
-  if buffer.Visible then buffer.Show else begin
+  if buffer.Visible then begin
+    log('BUFFER.show: FALSE');
+    buffer.Show;
+  end  else begin
     buffer.Visible:=true;
     buffer.Show;
+    log('BUFFER.show: FALSE')
   end;
 
   if (main.numberPageMax=strtoint(pageNumber.Caption)) then pageNumber.Caption:='1'
@@ -1120,7 +1132,7 @@ begin
   //Инициализация переменных
   main.dbConnect:=false;
   main.statusBottom('','инициализация данных...');
-  currentVersion:='0.11.1';
+  currentVersion:='0.11.2';
   main.statusBottom('','');
 
 // MOD_ALT = 1;
@@ -1448,6 +1460,11 @@ begin
 main.dbCreateTable(3);
 end;
 
+procedure Tmain.N10Click(Sender: TObject);
+begin
+ftimer.Show
+end;
+
 procedure Tmain.N11Click(Sender: TObject);
 var i:word;
 begin
@@ -1457,13 +1474,13 @@ end;
 procedure Tmain.bdCheackClick(Sender: TObject);
 begin
 if main.bdCheack.Checked then begin
- log('Отключаюсь к БД...');
+ if debug.Visible then log('Отключаюсь к БД...');
  main.bdCheack.Checked:=false;
  main.dbConnect:=false;
  main.dbConnectCheacking();
 
 end else begin
- log('Подключаюсь к БД');
+ if debug.Visible then log('Подключаюсь к БД');
  main.dbConnect:=true;
  main.bdCheack.Checked:=true;
  settings.initSettings();
@@ -1504,11 +1521,19 @@ procedure Tmain.N6Click(Sender: TObject);
 begin
 buffer.Close;
 end;
-procedure Tmain.N7Click(Sender: TObject);
+
+procedure Tmain.showBufferCheackClick(Sender: TObject);
 begin
-  buffer.FormStyle:=fsStayOnTop;
-  main.N5.Checked:=true;
-  buffer.Show;
+  if main.showBufferCheack.Checked then begin
+
+    buffer.FormStyle:=fsStayOnTop;
+    main.showBufferCheack.Checked:=false;
+    buffer.Hide;
+  end else begin
+    buffer.FormStyle:=fsStayOnTop;
+    main.showBufferCheack.Checked:=true;
+    buffer.Show;
+  end;
 end;
 procedure Tmain.N8Click(Sender: TObject);
 var

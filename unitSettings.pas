@@ -382,10 +382,13 @@ begin
  settings.timerUpdate.Text:='2';
 
  settings.alarmNumPage:=1;
-if main.dbConnect then settings.noticeInit(1);
+if main.dbConnect then begin
+ settings.noticeInit(1);
+ main.bdCheack.Checked:=true;
+end;
 
 //main.syncDbApp();
- main.bdCheack.Click;
+// main.bdCheack.Click;
 end;
 
 procedure Tsettings.HotKey1Change(Sender: TObject);

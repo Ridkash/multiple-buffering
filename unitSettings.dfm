@@ -1,6 +1,6 @@
 object settings: Tsettings
-  Left = 618
-  Top = 370
+  Left = 0
+  Top = 0
   BorderStyle = bsDialog
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
   ClientHeight = 354
@@ -235,6 +235,7 @@ object settings: Tsettings
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Visible = False
     end
     object hotkeyAllNum: TLabel
       Left = 78
@@ -263,6 +264,7 @@ object settings: Tsettings
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Visible = False
     end
     object hotkeyMemo: TMemo
       Left = 13
@@ -300,6 +302,7 @@ object settings: Tsettings
       Cursor = crHandPoint
       Caption = '<'
       TabOrder = 3
+      Visible = False
     end
     object Button2: TButton
       Left = 106
@@ -309,6 +312,7 @@ object settings: Tsettings
       Cursor = crHandPoint
       Caption = '>'
       TabOrder = 4
+      Visible = False
     end
     object Button3: TButton
       Left = 206
@@ -317,6 +321,7 @@ object settings: Tsettings
       Height = 25
       Caption = #1048#1079#1084#1077#1085#1090#1100
       TabOrder = 5
+      Visible = False
     end
     object Button4: TButton
       Left = 204
