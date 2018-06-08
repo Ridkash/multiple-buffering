@@ -3,8 +3,8 @@ object settings: Tsettings
   Top = 0
   BorderStyle = bsDialog
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
-  ClientHeight = 354
-  ClientWidth = 736
+  ClientHeight = 376
+  ClientWidth = 653
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,14 +19,14 @@ object settings: Tsettings
   object Splitter1: TSplitter
     Left = 0
     Top = 0
-    Height = 332
+    Height = 354
     ExplicitLeft = 186
     ExplicitTop = 29
     ExplicitHeight = 339
   end
   object ButtonCancel: TButton
-    Left = 585
-    Top = 284
+    Left = 564
+    Top = 302
     Width = 75
     Height = 25
     Caption = #1086#1090#1084#1077#1085#1072
@@ -34,8 +34,8 @@ object settings: Tsettings
     OnClick = ButtonCancelClick
   end
   object ButtonSave: TButton
-    Left = 489
-    Top = 284
+    Left = 460
+    Top = 302
     Width = 75
     Height = 25
     Caption = #1089#1086#1093#1088#1072#1085#1080#1090#1100
@@ -43,9 +43,9 @@ object settings: Tsettings
     OnClick = ButtonSaveClick
   end
   object gNotice: TGroupBox
-    Left = 338
-    Top = 0
-    Width = 385
+    Left = 303
+    Top = 174
+    Width = 336
     Height = 114
     Caption = ' '#1044#1086#1073#1072#1074#1080#1090#1100' '#1085#1072#1087#1086#1084#1080#1085#1072#1085#1080#1077
     TabOrder = 2
@@ -115,7 +115,7 @@ object settings: Tsettings
       OnClick = noticeNumberFollowingClick
     end
     object noticeChange: TButton
-      Left = 258
+      Left = 129
       Top = 50
       Width = 64
       Height = 25
@@ -162,8 +162,8 @@ object settings: Tsettings
       Text = #1064#1072#1087#1082#1072
     end
     object noticeAdd: TButton
-      Left = 328
-      Top = 24
+      Left = 264
+      Top = 47
       Width = 25
       Height = 20
       Cursor = crHandPoint
@@ -172,23 +172,14 @@ object settings: Tsettings
       OnClick = noticeAddClick
     end
     object noticeDelete: TButton
-      Left = 357
-      Top = 24
+      Left = 295
+      Top = 47
       Width = 25
       Height = 20
       Cursor = crHandPoint
       Caption = '-'
       TabOrder = 7
       OnClick = noticeDeleteClick
-    end
-    object timerIsActive: TButton
-      Left = 258
-      Top = 81
-      Width = 64
-      Height = 25
-      Caption = 'TIMER'
-      TabOrder = 8
-      OnClick = timerIsActiveClick
     end
   end
   object bashCheack: TCheckBox
@@ -204,14 +195,16 @@ object settings: Tsettings
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 332
-    Width = 736
+    Top = 354
+    Width = 653
     Height = 22
     Panels = <>
+    ExplicitTop = 332
+    ExplicitWidth = 736
   end
   object hotKeyGroup: TGroupBox
-    Left = 9
-    Top = 166
+    Left = 0
+    Top = 180
     Width = 288
     Height = 147
     Caption = #1043#1086#1088#1103#1095#1080#1077' '#1082#1085#1086#1087#1082#1080':'
@@ -334,8 +327,8 @@ object settings: Tsettings
     end
   end
   object gTimer: TGroupBox
-    Left = 11
-    Top = 0
+    Left = 303
+    Top = 8
     Width = 323
     Height = 160
     Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1090#1072#1081#1084#1077#1088#1072
@@ -423,11 +416,35 @@ object settings: Tsettings
       Text = '99'
     end
   end
+  object GroupBox1: TGroupBox
+    Left = 15
+    Top = 8
+    Width = 273
+    Height = 166
+    Caption = #1054#1073#1097#1080#1077' '#1085#1072#1089#1090#1088#1086#1081#1082#1080
+    TabOrder = 7
+    object logTrue: TCheckBox
+      Left = 3
+      Top = 18
+      Width = 170
+      Height = 17
+      Caption = #1051#1086#1075#1080#1088#1086#1074#1072#1085#1080#1077' '
+      TabOrder = 0
+    end
+    object noticeAutorun: TCheckBox
+      Left = 3
+      Top = 41
+      Width = 158
+      Height = 17
+      Caption = #1040#1074#1090#1086#1079#1072#1087#1091#1089#1082' '#1085#1072#1087#1086#1084#1080#1085#1072#1085#1080#1081
+      TabOrder = 1
+    end
+  end
   object noticeTimer: TTimer
     Enabled = False
     Interval = 8000
     OnTimer = noticeTimerTimer
-    Left = 352
-    Top = 127
+    Left = 312
+    Top = 295
   end
 end

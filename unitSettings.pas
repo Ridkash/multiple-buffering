@@ -43,7 +43,6 @@ type
     noticeAdd: TButton;
     noticeDelete: TButton;
     noticeTimer: TTimer;
-    timerIsActive: TButton;
     HotKey1: THotKey;
     StatusBar1: TStatusBar;
     Splitter1: TSplitter;
@@ -58,6 +57,9 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    GroupBox1: TGroupBox;
+    logTrue: TCheckBox;
+    noticeAutorun: TCheckBox;
 
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
@@ -68,7 +70,6 @@ type
     procedure noticeNumberFollowingClick(Sender: TObject);
     procedure noticeNumberPreviousClick(Sender: TObject);
     procedure noticeTimerTimer(Sender: TObject);
-    procedure timerIsActiveClick(Sender: TObject);
     procedure noticeChangeClick(Sender: TObject);
     procedure HotKey1Change(Sender: TObject);
     procedure addHotkeyButtonClick(Sender: TObject);
@@ -88,6 +89,7 @@ type
     alarmMass: array[1..100] of TRecAlarm;
     alarmNumPage: word;
     alarmID: word; // отображает id в базе текущей формы notice
+    noticeTimerIsActive: boolean;
     procedure activeTimer();
     procedure initSettings();
     procedure initHotkey(i:word);
@@ -103,24 +105,25 @@ implementation
 uses unitMain, unitBuffer;
 procedure Tsettings.initHotkey(i: Word);
 begin
-main.cmdSql(0,'SELECT s.cmd FROM shortcuts s WHERE rowid="'+inttostr(i)+'"',main.tmp);
-main.log('В hotkey:'+main.tmp);
-settings.hotkeyMemo.Text:=trim(main.tmp);
+  main.cmdSql(0,'SELECT s.cmd FROM shortcuts s WHERE rowid="'+inttostr(i)+'"',main.tmp);
+  main.log(1,'В hotkey:'+main.tmp);
+  settings.hotkeyMemo.Text:=trim(main.tmp);
 end;
 procedure Tsettings.initSettings();
 var
   res:string;
   i:word;
 begin
-main.log('procedure Tsettings.initSettings();');
+main.log(1,'procedure Tsettings.initSettings();');
   // Проверка на существование base.db в каталоге где запускается приложение если не существует инициализируем таблицу.
 if not FileExists(main.dbName) then begin
+  main.log(1,'Базу не обнаружил, будем создавать...');
   main.BufferConnection.Connected:=true;
   main.dbConnect:=true;
   for i := 1 to 5 do main.dbCreateTable(i);
-  main.log('Создал новую базу!');
+  main.log(1,'Создал новую базу!');
 end;
-main.log('БД существует... идем дальше!');
+main.log(1,'База существует... идем дальше!');
 
 alarmNumPage:=1;
 
@@ -171,10 +174,10 @@ alarmNumPage:=1;
 //  settings.noticeInitCurrent := 1;
   settings.alarmNumPage:=1;
   settings.noticeInit(alarmNumPage);
- main.log('ENTER: syncDbApp();');
+ main.log(1,'ENTER: syncDbApp();');
 main.syncDbApp();
-main.log('EXIT: syncDbApp');
-main.log('ENTER: syncDbHotKey');
+main.log(1,'EXIT: syncDbApp');
+main.log(1,'ENTER: syncDbHotKey');
 main.syncDbHotKey();
 
 end;
@@ -204,14 +207,14 @@ end;
 end;
 procedure Tsettings.activeTimer();
 begin
-  if settings.noticeTimer.Enabled then begin
- settings.timerIsActive.Caption := 'start';
+
+if settings.noticeTimer.Enabled then begin
+ settings.noticeTimerIsActive := false;
+ main.log(1,'Отключенид уведомления');
  settings.noticeTimer.Enabled := false;
-
 end else begin
-
- settings.timerIsActive.Caption := 'stop';
-
+ main.log(1,'Включил уведомления');
+ settings.noticeTimerIsActive:=true;
  settings.noticeTimer.Enabled := true;
 end;
 
@@ -222,7 +225,7 @@ var sql:string;
 begin
 noticereadonly(false);
 if settings.noticeChange.Caption='Изменить' then begin
-  main.log('изменить');
+  main.log(1,'изменить');
   settings.noticeChange.Caption:='Сохранить';
   settings.noticeDelete.Caption :='X';
 end else begin
@@ -230,7 +233,7 @@ end else begin
 
   noticereadonly(true);
   sql:='UPDATE notices SET time = "'+trim(settings.noticeTime.Text)+'",title = "'+trim(settings.noticeTitle.Text)+'",body = "'+trim(settings.noticeBody.Text)+'", status="1" WHERE idRecord = "'+trim(settings.noticeNumberCurrent.Caption) +'"';
-  main.log(sql);
+  main.log(1,sql);
   main.cmdSql(1,sql,main.tmp);
 end;
 
@@ -348,11 +351,6 @@ end;
 
 end;
 
-procedure Tsettings.timerIsActiveClick(Sender: TObject);
-begin
-settings.activeTimer();
-end;
-
 procedure Tsettings.addHotkeyButtonClick(Sender: TObject);
 begin
   main.cmdSql(1,'INSERT INTO shortcuts(cmd, shortcut ) VALUES ("'+ settings.hotkeyMemo.Text +'","$'+IntToHex(main.shortCutKey, 2) +'");',main.tmp);
@@ -385,6 +383,7 @@ begin
 if main.dbConnect then begin
  settings.noticeInit(1);
  main.bdCheack.Checked:=true;
+ settings.initSettings();
 end;
 
 //main.syncDbApp();

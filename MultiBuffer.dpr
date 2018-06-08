@@ -15,10 +15,10 @@ begin
   Application.MainFormOnTaskbar := True;
   Application.Title := 'Multi buffer';
   Application.CreateForm(Tmain, main);
+  Application.CreateForm(Tdebug, debug);
   Application.CreateForm(Tsettings, settings);
   Application.CreateForm(Tbuffer, buffer);
   Application.CreateForm(TfTimer, fTimer);
-  Application.CreateForm(Tdebug, debug);
   if unitMain.main.dbConnect then unitMain.main.pageInitSQL(unitSettings.settings.numberPageÑurrent) else
     unitMain.main.statusBottom('ÁÄ ÍÅ ÏÎÄÊËŞ×ÅÍÀ1','');
 

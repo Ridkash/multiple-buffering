@@ -17,6 +17,7 @@ object fTimer: TfTimer
   OldCreateOrder = True
   Visible = True
   WindowMenu = timerStartButton
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object timerH: TLabel

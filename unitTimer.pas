@@ -30,6 +30,7 @@ type
     procedure timerStartButtonClick(Sender: TObject);
     procedure timerStopButtonClick(Sender: TObject);
     procedure timerUpdater(inStr: string);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -50,6 +51,8 @@ var
 implementation
 
 {$R *.dfm}
+
+uses unitMain;
 
 procedure TfTimer.timerUpdater(inStr: string);
   var today: TDateTime;
@@ -137,6 +140,23 @@ procedure TfTimer.ButtonRClick(Sender: TObject);
 begin
 //showmessage(ftimer.LabelCount.Caption);
 ftimer.timerCount.Caption:=inttostr(strtoint(ftimer.timerCount.Caption)+1)
+end;
+
+procedure TfTimer.FormCreate(Sender: TObject);
+begin
+if main.dbConnect then begin
+  main.log(1,'Включение опции...');
+  main.cmdSql(0,'SELECT s.value FROM settings s WHERE s.param="noticeAutorunTrue"',main.tmp);
+  if strtoint(main.tmp)=1 then  begin
+    settings.noticeAutorun.Checked:=true;
+    settings.activeTimer()
+  end else settings.noticeAutorun.Checked:=false;
+
+  main.cmdSql(0,'SELECT s.value FROM settings s WHERE s.param = "logTrue"',main.tmp);
+  if strtoint(main.tmp)=1 then  settings.logTrue.Checked:=true else settings.logTrue.Checked:=false
+end;
+
+
 end;
 
 procedure TfTimer.timerStartButtonClick(Sender: TObject);

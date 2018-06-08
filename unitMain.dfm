@@ -5575,8 +5575,8 @@ object main: Tmain
     OnClick = paste5Click
   end
   object titleItems: TComboBox
-    Left = 50
-    Top = 0
+    Left = 59
+    Top = -1
     Width = 201
     Height = 22
     Cursor = crHandPoint
@@ -6439,10 +6439,6 @@ object main: Tmain
         Caption = #1055#1086#1083#1085#1099#1081' '#1089#1073#1088#1086#1089' '#1090#1072#1073#1083#1080#1094
         OnClick = N11Click
       end
-      object DebugCheack: TMenuItem
-        Caption = 'Debug'
-        OnClick = DebugCheackClick
-      end
     end
     object buffer1: TMenuItem
       Caption = #1073#1091#1092#1077#1088
@@ -6463,14 +6459,6 @@ object main: Tmain
     object N3: TMenuItem
       Caption = #1089#1086#1093#1088#1072#1085#1080#1090#1100
       OnClick = N3Click
-    end
-    object TEST: TMenuItem
-      Caption = 'TEST'
-      OnClick = TESTClick
-    end
-    object EST21: TMenuItem
-      Caption = 'TEST2'
-      OnClick = EST21Click
     end
   end
   object query: TSQLQuery
