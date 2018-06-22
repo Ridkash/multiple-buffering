@@ -60,6 +60,10 @@ type
     GroupBox1: TGroupBox;
     logTrue: TCheckBox;
     noticeAutorun: TCheckBox;
+    bdwayCheange: TSaveDialog;
+    bdWay: TEdit;
+    bdWayButton: TButton;
+    bdWayLabel: TLabel;
 
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
@@ -74,6 +78,11 @@ type
     procedure HotKey1Change(Sender: TObject);
     procedure addHotkeyButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure bdWayButtonClick(Sender: TObject);
+    procedure bdWayChange(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -106,7 +115,7 @@ uses unitMain, unitBuffer;
 procedure Tsettings.initHotkey(i: Word);
 begin
   main.cmdSql(0,'SELECT s.cmd FROM shortcuts s WHERE rowid="'+inttostr(i)+'"',main.tmp);
-  main.log(1,'Â hotkey:'+main.tmp);
+  main.log(2,'Â hotkey:'+main.tmp);
   settings.hotkeyMemo.Text:=trim(main.tmp);
 end;
 procedure Tsettings.initSettings();
@@ -355,6 +364,43 @@ procedure Tsettings.addHotkeyButtonClick(Sender: TObject);
 begin
   main.cmdSql(1,'INSERT INTO shortcuts(cmd, shortcut ) VALUES ("'+ settings.hotkeyMemo.Text +'","$'+IntToHex(main.shortCutKey, 2) +'");',main.tmp);
   settings.hotkeyMemo.Clear;
+end;
+
+procedure Tsettings.bdWayButtonClick(Sender: TObject);
+begin
+  if settings.bdwayCheange.Execute then begin
+   main.log(1,settings.bdwayCheange.FileName);
+   settings.bdWay.Text:= settings.bdwayCheange.FileName;
+  end;
+end;
+
+procedure Tsettings.bdWayChange(Sender: TObject);
+begin
+main.log(2,'ÈÇÌÅÍÅÍÀ ÏÓÒÜ Ê ÁÀÇÅ');
+end;
+
+procedure Tsettings.Button1Click(Sender: TObject);
+begin
+  if strtoint(settings.hotKeyCurient.Caption)>1 then
+     settings.hotKeyCurient.Caption:=inttostr(strtoint(settings.hotKeyCurient.Caption)-1);
+  main.syncDbHotKey();
+end;
+
+procedure Tsettings.Button2Click(Sender: TObject);
+begin
+  if strtoint(settings.hotKeyCurient.Caption)<strtoint(settings.hotkeyAllNum.Caption) then
+     settings.hotKeyCurient.Caption:=inttostr(strtoint(settings.hotKeyCurient.Caption)+1);
+  main.syncDbHotKey();
+end;
+
+procedure Tsettings.Button3Click(Sender: TObject);
+var sql:string;
+begin
+
+  sql:='UPDATE shortcuts SET cmd = "'+trim(settings.hotkeyMemo.Text)+'" WHERE rowid = "'+trim(settings.hotKeyCurient.Caption) +'"';
+  main.log(2,sql);
+  main.cmdSql(1,sql,main.tmp);
+  main.statusBottom('Èçìåíåí','');
 end;
 
 procedure Tsettings.ButtonCancelClick(Sender: TObject);

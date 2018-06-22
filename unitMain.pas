@@ -163,6 +163,7 @@ TRecHotKey = Record
     procedure N10Click(Sender: TObject);
 
 
+
   private
     { Private declarations }
 //    id1, id2, id3, id4: Integer;
@@ -198,6 +199,7 @@ TRecHotKey = Record
     procedure notice(AlarmOn, time,title,body:string);
     procedure pageInitSQL(needPageNumber: word);
     procedure log(t:word;addStr:string);
+    procedure dbWayEdit(str:string);
     function trimInSql(str:string): string;
     function trimoutSql(str:string): string;
 
@@ -232,6 +234,32 @@ uses unitTimer, unitDebug;
 //     then raise EConvertError.Create('"'+Value+'" is not within range of Cardinal data type'); //this msg should not end with dot!
 //  Result := i6;
 //end;
+procedure TMain.dbWayEdit(str:string);
+
+begin
+  try
+    main.BufferConnection.Connected:=false;
+  except
+
+  end;
+  main.dbConnect:=false;  
+
+  if str<>'' then main.dbName:=str
+    else main.dbName:=GetCurrentDir + '\base.db';
+ main.BufferConnection.Params.Add('Database='+dbName);
+
+
+  if FileExists(main.dbName) then begin
+    main.BufferConnection.Connected:=true;
+    main.dbConnect:=true;
+  end;
+
+ 
+end;
+
+
+
+
 function TMain.dbConnectCheacking(): boolean;
 begin
   if main.dbConnect then begin
@@ -252,6 +280,16 @@ procedure TMain.settingsSave();
 var tmp :string;
 begin
 //MAIN settings
+
+try
+  main.dbWayEdit(settings.bdWay.Text);
+finally
+  log(1,'Во время переименнования БД возникла ошибка');
+end;
+
+if main.dbConnect then begin
+
+
 tmp:='0';
 if settings.noticeAutorun.Checked then cmdsql(1,'UPDATE settings SET value="1" WHERE param="noticeAutorunTrue"',tmp)
   else cmdsql(1,'UPDATE settings SET value="0" WHERE param="noticeAutorunTrue"',tmp);
@@ -291,6 +329,7 @@ if settings.logTrue.Checked then cmdsql(1,'UPDATE settings SET value="1" WHERE p
     log(1,'procedure TMain.settingsSave(); Настройки сохранены');
     main.status.Panels.Items[1].Text:='настройки сохранены';
 end;
+end;
 procedure TMain.unRegAtom ();
 var i :word;
 begin
@@ -324,21 +363,27 @@ begin
 //SELECT COUNT(*) FROM table
 log(1,'Регистрирую пользовательские hotkeys ');
 settings.hotkeyAllNum.Caption:='1';
-settings.hotKeyCurient.Caption:='1';
+
 
 main.cmdSql(0,'SELECT COUNT(*) FROM shortcuts',main.tmp);
 allNumShortcuts:= strtoint(main.tmp);
-settings.hotkeyAllNum.Caption:=tmp;
 
+settings.hotkeyAllNum.Caption:=tmp;
+log(2,'Всего хоткеев(allNumShortcuts):  '+inttostr(allNumShortcuts));
 for i := 1 to allNumShortcuts do begin
   main.cmdSql(0,'select s.shortcut from shortcuts s where s.rowid='+inttostr(i)+';',tmp);
   main.massHot[i+19].vk:=tmp;
+  log(2,tmp);
   main.cmdSql(0,'select s.cmd from shortcuts s where s.rowid='+inttostr(i)+';',tmp);
   main.massHot[i+19].value:=tmp;
   massHot[i+19].idKey := GlobalAddAtom(PWideChar(WideString('Hotkey_C_' + inttostr(i+19))));
   RegisterHotKey(Handle, massHot[i+19].idKey, modUse, StrToUInt(massHot[i+19].VK));
 end;
+
+if allNumShortcuts=0 then settings.hotkeyAllNum.Caption:='0';
 settings.initHotkey(strtoint(settings.hotKeyCurient.Caption));
+
+
 
 end;
 
@@ -348,7 +393,8 @@ var ttype: string;
 begin
    case t of
      0:ttype:='[ERROR] ';
-     1:ttype:='[INFO] ';
+     1:ttype:='[NOTICE] ';
+     2:ttype:='[INFO] ';
    end;
 
   if settings.logTrue.Checked then begin
@@ -1103,20 +1149,20 @@ var
 begin
   //Инициализация переменных
   main.dbConnect:=false;
-  main.statusBottom('','инициализация данных...');
+  main.statusBottom('инициализация данных...','');
   currentVersion:='0.11.3';
 // MOD_ALT = 1;
 // MOD_CONTROL = 2;
   modUse := 2;
 
-  dbName:=GetCurrentDir + '\base.db';
-  main.BufferConnection.Params.Add('Database='+dbName);
+//  dbName:=GetCurrentDir + '\base.db';
+//  main.BufferConnection.Params.Add('Database='+dbName);
+
+  main.dbWayEdit('');
   main.Caption := main.Caption + ' ' + currentVersion;
 
-if FileExists(main.dbName) then begin
-  main.BufferConnection.Connected:=true;
-  main.dbConnect:=true;
-end;
+
+
 //SQL - запросы
   // create table buffers (item text,notice text);
   //*********

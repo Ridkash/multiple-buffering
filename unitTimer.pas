@@ -144,6 +144,8 @@ end;
 
 procedure TfTimer.FormCreate(Sender: TObject);
 begin
+//Загрузка доп. опции модуль загружается последним
+
 if main.dbConnect then begin
   main.log(1,'Включение опции...');
   main.cmdSql(0,'SELECT s.value FROM settings s WHERE s.param="noticeAutorunTrue"',main.tmp);
@@ -153,7 +155,11 @@ if main.dbConnect then begin
   end else settings.noticeAutorun.Checked:=false;
 
   main.cmdSql(0,'SELECT s.value FROM settings s WHERE s.param = "logTrue"',main.tmp);
-  if strtoint(main.tmp)=1 then  settings.logTrue.Checked:=true else settings.logTrue.Checked:=false
+  if strtoint(main.tmp)=1 then  settings.logTrue.Checked:=true else settings.logTrue.Checked:=false;
+  settings.bdWay.Text:=main.dbName;
+
+settings.hotKeyCurient.Caption:='0';
+
 end;
 
 

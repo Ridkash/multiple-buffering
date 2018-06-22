@@ -199,8 +199,6 @@ object settings: Tsettings
     Width = 653
     Height = 22
     Panels = <>
-    ExplicitTop = 332
-    ExplicitWidth = 736
   end
   object hotKeyGroup: TGroupBox
     Left = 0
@@ -228,7 +226,6 @@ object settings: Tsettings
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      Visible = False
     end
     object hotkeyAllNum: TLabel
       Left = 78
@@ -257,7 +254,6 @@ object settings: Tsettings
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      Visible = False
     end
     object hotkeyMemo: TMemo
       Left = 13
@@ -295,7 +291,7 @@ object settings: Tsettings
       Cursor = crHandPoint
       Caption = '<'
       TabOrder = 3
-      Visible = False
+      OnClick = Button1Click
     end
     object Button2: TButton
       Left = 106
@@ -305,7 +301,7 @@ object settings: Tsettings
       Cursor = crHandPoint
       Caption = '>'
       TabOrder = 4
-      Visible = False
+      OnClick = Button2Click
     end
     object Button3: TButton
       Left = 206
@@ -314,7 +310,7 @@ object settings: Tsettings
       Height = 25
       Caption = #1048#1079#1084#1077#1085#1090#1100
       TabOrder = 5
-      Visible = False
+      OnClick = Button3Click
     end
     object Button4: TButton
       Left = 204
@@ -423,6 +419,14 @@ object settings: Tsettings
     Height = 166
     Caption = #1054#1073#1097#1080#1077' '#1085#1072#1089#1090#1088#1086#1081#1082#1080
     TabOrder = 7
+    object bdWayLabel: TLabel
+      Left = 3
+      Top = 64
+      Width = 55
+      Height = 13
+      Caption = #1055#1091#1090#1100' '#1082' '#1041#1044':'
+      Visible = False
+    end
     object logTrue: TCheckBox
       Left = 3
       Top = 18
@@ -439,6 +443,27 @@ object settings: Tsettings
       Caption = #1040#1074#1090#1086#1079#1072#1087#1091#1089#1082' '#1085#1072#1087#1086#1084#1080#1085#1072#1085#1080#1081
       TabOrder = 1
     end
+    object bdWay: TEdit
+      Left = 65
+      Top = 86
+      Width = 187
+      Height = 21
+      BevelKind = bkSoft
+      TabOrder = 2
+      Text = 'bdWay'
+      Visible = False
+      OnChange = bdWayChange
+    end
+    object bdWayButton: TButton
+      Left = 3
+      Top = 84
+      Width = 56
+      Height = 25
+      Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+      TabOrder = 3
+      Visible = False
+      OnClick = bdWayButtonClick
+    end
   end
   object noticeTimer: TTimer
     Enabled = False
@@ -446,5 +471,9 @@ object settings: Tsettings
     OnTimer = noticeTimerTimer
     Left = 312
     Top = 295
+  end
+  object bdwayCheange: TSaveDialog
+    Left = 351
+    Top = 296
   end
 end
