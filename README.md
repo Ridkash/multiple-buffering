@@ -36,3 +36,10 @@
 
 * ![alt text](doc/button-edit-title.png) — служит для изменения темы страницы
 * ![alt text](doc/button-up.png) — служит для перемещения ячейки на верх
+
+## Contribution
+
+Install this repo:
+`
+git clone https://github.com/delphi-m/multiple-buffering.git
+`
